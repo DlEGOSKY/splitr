@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a0a2e"/>
+      <stop offset="100%" stop-color="#090912"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F5FF"/>
+      <stop offset="50%" stop-color="#7B2FBE"/>
+      <stop offset="100%" stop-color="#FF006E"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+
+  <!-- Borde neón -->
+  <rect width="512" height="512" rx="110" fill="none" stroke="#7B2FBE" stroke-width="6" opacity="0.6"/>
+  <rect x="10" y="10" width="492" height="492" rx="104" fill="none" stroke="#00F5FF" stroke-width="2" opacity="0.2"/>
+
+  <!-- Rayo central -->
+  <path d="M290 52 L192 268 L256 268 L224 460 L340 228 L276 228 Z"
+        fill="url(#bolt)"
+        filter="url(#glow)"
+        opacity="0.95"/>
+</svg>

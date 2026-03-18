@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="cyberpunk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Selector aleatorio dramático. ¿Quién paga la cuenta? ¿Quién lava los platos? El azar decide.">
+  <meta name="theme-color" content="#090912">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Splitr">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Ícono de la app -->
+  <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+  <!-- Google Fonts: única dependencia externa -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS Modular -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/themes.css">
+
+  <title>Splitr</title>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════════════════════════════════
+       PANTALLA PRINCIPAL (HOME)
+  ══════════════════════════════════════════ -->
+  <section class="screen" id="screen-home" role="main" aria-label="Pantalla principal">
+
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="app-logo">Splitr</h1>
+      <div class="header-actions">
+        <button class="btn btn-icon" id="btn-theme" aria-label="Cambiar tema" title="Tema de color">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 0 20"/>
+            <path d="M12 2C6.5 2 2 6.5 2 12"/>
+          </svg>
+        </button>
+        <button class="btn btn-icon" id="btn-groups" aria-label="Grupos guardados" title="Mis grupos">
+          <!-- Ícono grupo (SVG inline) -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </button>
+        <button class="btn btn-icon" id="btn-stats" aria-label="Ver estadísticas" title="Estadísticas">
+          <!-- Ícono gráfico de barras -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6"  y1="20" x2="6"  y2="14"/>
+          </svg>
+        </button>
+        <button class="btn btn-icon" id="btn-voice" aria-label="Activar sorteo por voz" title="Voz" style="display:none;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+        <button class="btn btn-icon" id="btn-help" aria-label="Ayuda e instalación" title="Ayuda">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17" stroke-width="3"/>
+          </svg>
+        </button>
+        <button class="btn btn-icon" id="btn-settings" aria-label="Personalizar" title="Personalizar">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Input de pregunta personalizable -->
+    <div>
+      <input
+        type="text"
+        class="input-question"
+        id="input-question"
+        value="¿Quién paga?"
+        placeholder="¿Quién hace qué?"
+        maxlength="60"
+        aria-label="Pregunta o tarea del sorteo"
+      >
+    </div>
+
+    <!-- Selector de modo de juego -->
+    <div class="control-panel">
+      <div class="mode-selector" role="group" aria-label="Modo de juego">
+        <button class="mode-btn active" data-mode="normal"      aria-pressed="true">Normal</button>
+        <button class="mode-btn"        data-mode="elimination" aria-pressed="false">Eliminación</button>
+        <button class="mode-btn"        data-mode="team"        aria-pressed="false">Equipo</button>
+        <button class="mode-btn"        data-mode="order"       aria-pressed="false">Orden</button>
+        <button class="mode-btn"        data-mode="revenge"     aria-pressed="false">Venganza</button>
+        <button class="mode-btn"        data-mode="duel"        aria-pressed="false">Duelo</button>
+        <button class="mode-btn"        data-mode="split"       aria-pressed="false">Dividir</button>
+        <button class="mode-btn"        data-mode="russian"     aria-pressed="false">Ruleta Rusa</button>
+      </div>
+
+      <!-- Sub-opciones contextuales por modo -->
+      <div class="mode-description" id="mode-description">
+        <!-- Normal -->
+        <div class="mode-desc-panel active" data-for="normal">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+          </span>
+          <span class="mode-desc-text">Elige a una persona al azar. La suerte influye en la probabilidad.</span>
+        </div>
+        <!-- Eliminación -->
+        <div class="mode-desc-panel" data-for="elimination">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4C8.7 4 6 6.7 6 10c0 2.2 1.1 4.1 2.8 5.2V17h6.4v-1.8C16.9 14.1 18 12.2 18 10c0-3.3-2.7-6-6-6z"/><line x1="9.5" y1="17" x2="9.5" y2="20"/><line x1="14.5" y1="17" x2="14.5" y2="20"/><line x1="9.5" y1="20" x2="14.5" y2="20"/><circle cx="9.5" cy="11" r="1.2" fill="currentColor" stroke="none"/><circle cx="14.5" cy="11" r="1.2" fill="currentColor" stroke="none"/></svg>
+          </span>
+          <span class="mode-desc-text">El elegido queda <strong>fuera</strong>. Sortea de nuevo hasta que quede uno.</span>
+        </div>
+        <!-- Equipo -->
+        <div class="mode-desc-panel" data-for="team">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/></svg>
+          </span>
+          <div class="mode-desc-team">
+            <span class="mode-desc-text">Elegir</span>
+            <div class="team-size-control">
+              <button class="team-size-btn" id="team-size-dec" aria-label="Menos">−</button>
+              <span class="team-size-val" id="team-size-val">2</span>
+              <button class="team-size-btn" id="team-size-inc" aria-label="Más">+</button>
+            </div>
+            <span class="mode-desc-text">personas al azar</span>
+          </div>
+        </div>
+        <!-- Orden -->
+        <div class="mode-desc-panel" data-for="order">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><path d="M4 6h1v4M4 10h2M4 14v-0.5a1.5 1.5 0 0 1 3 0c0 .8-.7 1.5-1.5 2L4 17h3" stroke-width="1.4"/></svg>
+          </span>
+          <span class="mode-desc-text">Genera un orden aleatorio completo. Se revela uno por uno.</span>
+        </div>
+        <!-- Venganza -->
+        <div class="mode-desc-panel" data-for="revenge">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </span>
+          <span class="mode-desc-text">El último elegido tiene <strong>5× más</strong> probabilidad en el siguiente sorteo.</span>
+        </div>
+        <!-- Duelo -->
+        <div class="mode-desc-panel" data-for="duel">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3H5L3 9l5 5 5-5-2-6H8z"/><path d="M16 21h3l2-6-5-5-5 5 2 6h3z"/><line x1="8" y1="8" x2="16" y2="16"/></svg>
+          </span>
+          <span class="mode-desc-text" id="duel-desc-text">Toca 2 avatares para enfrentarlos. El azar decide quién paga.</span>
+        </div>
+        <!-- Dividir -->
+        <div class="mode-desc-panel" data-for="split">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/></svg>
+          </span>
+          <span class="mode-desc-text">Divide al grupo en 2 equipos aleatorios al instante.</span>
+        </div>
+        <!-- Ruleta Rusa -->
+        <div class="mode-desc-panel" data-for="russian">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="2" fill="var(--color-impact)" stroke="var(--color-impact)"/></svg>
+          </span>
+          <span class="mode-desc-text">La ruleta elimina un sector por ronda hasta que quede un condenado.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Añadir participante -->
+    <div class="input-group">
+      <input
+        type="text"
+        class="input-text"
+        id="input-participant"
+        placeholder="Nombre del participante..."
+        maxlength="30"
+        aria-label="Nombre del nuevo participante"
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      >
+      <button class="btn btn-primary" id="btn-add-participant" aria-label="Agregar participante">
+        <!-- Ícono + -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Añadir
+      </button>
+    </div>
+
+    <!-- Contador de participantes + hint de onboarding -->
+    <div style="display:flex;align-items:center;justify-content:space-between;min-height:28px;">
+      <span class="counter-chip" id="counter-chip">
+        <span class="count">0</span>/0 activos
+      </span>
+      <!-- Tooltip de onboarding: aparece la primera vez que hay participantes -->
+      <div id="onboarding-hint" class="onboarding-hint" style="display:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 11V6a2 2 0 0 1 4 0v5"/><path d="M13 11v-1a2 2 0 0 1 4 0v3c0 3-2 5-5 5H9a5 5 0 0 1-5-5v-2a2 2 0 0 1 4 0v1"/></svg>
+        Toca un avatar para opciones
+      </div>
+    </div>
+
+    <!-- Banner de Duelo — aparece solo en modo Duelo -->
+    <div id="duel-banner" class="duel-banner" style="display:none;" aria-live="polite">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 11V6a2 2 0 0 1 4 0v5"/><path d="M13 11v-1a2 2 0 0 1 4 0v3c0 3-2 5-5 5H9a5 5 0 0 1-5-5v-2a2 2 0 0 1 4 0v1"/></svg>
+      <span id="duel-banner-text">Toca 2 avatares para enfrentarlos</span>
+    </div>
+
+    <!-- Grid de avatares de participantes -->
+    <div
+      class="participants-grid"
+      id="participants-grid"
+      role="list"
+      aria-label="Participantes"
+      aria-live="polite"
+    >
+      <!-- Renderizado dinámico por ui.js -->
+    </div>
+
+    <div class="neon-divider"></div>
+
+    <!-- Botón principal de sorteo -->
+    <button class="btn btn-impact" id="btn-sortear" disabled aria-label="Iniciar sorteo">
+      <svg class="btn-sortear-icon" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <polygon points="13,2 4.5,13.5 11,13.5 11,22 19.5,10.5 13,10.5"/>
+      </svg>
+      SORTEAR
+    </button>
+
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+       PANTALLA DE ESTADÍSTICAS
+  ══════════════════════════════════════════ -->
+  <section class="screen" id="screen-stats" role="main" aria-label="Estadísticas de sesión">
+
+    <header class="app-header">
+      <button class="btn btn-icon" id="btn-back-home" aria-label="Volver al inicio">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <h2 class="screen-title">Stats <span>de Sesión</span></h2>
+      <!-- Tab: Stats / Historial -->
+      <div class="stats-tabs">
+        <button class="stats-tab active" id="tab-stats" data-tab="stats">Stats</button>
+        <button class="stats-tab" id="tab-history" data-tab="history">Historial</button>
+      </div>
+    </header>
+
+    <!-- Panel Stats -->
+    <div class="stats-grid" id="stats-grid" role="list" aria-label="Estadísticas por participante" style="display:flex;flex-direction:column;">
+    </div>
+
+    <!-- Panel Historial -->
+    <div class="history-list" id="history-list" role="list" aria-label="Historial de sorteos" style="display:none;">
+    </div>
+
+  </section>
+
+</div><!-- /#app -->
+
+
+<!-- ══════════════════════════════════════════
+     OVERLAY DE RESULTADO (fuera del flujo normal)
+══════════════════════════════════════════ -->
+<div id="result-overlay" role="dialog" aria-modal="true" aria-label="Resultado del sorteo">
+  <div class="winner-spotlight" aria-hidden="true"></div>
+
+  <!-- Avatar grande del ganador -->
+  <div class="winner-avatar-big" id="result-avatar-big" aria-hidden="true"></div>
+
+  <!-- Texto de resultado -->
+  <p class="result-label" id="result-label">¡El elegido es!</p>
+  <h2 class="result-name" id="result-name" data-text=""></h2>
+  <p class="result-question" id="result-question"></p>
+
+  <!-- Acciones post-resultado — cambian según el modo -->
+  <div id="result-actions" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+    <button class="btn btn-impact" id="btn-result-next" style="display:none;font-size:1rem;padding:14px 28px;">
+      Siguiente →
+    </button>
+    <button class="btn btn-accent" id="btn-result-again">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      Otra vez
+    </button>
+    <button class="btn btn-icon" id="btn-result-share" style="width:auto;padding:12px 16px;" aria-label="Compartir resultado" title="Compartir">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+    <button class="btn btn-icon" id="btn-result-close" style="width:auto;padding:12px 20px;" aria-label="Cerrar resultado">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+      Cerrar
+    </button>
+  </div>
+
+  <!-- Indicador de progreso para modos secuenciales -->
+  <div id="result-progress" style="display:none;">
+    <div class="progress-track" id="progress-dots"></div>
+  </div>
+</div>
+
+<!-- Splash Screen — aparece al abrir la app, desaparece en 1.8s -->
+<div id="splash-screen" aria-hidden="true">
+  <div class="splash-inner">
+    <div class="splash-logo-wrap">
+      <svg class="splash-bolt" width="40" height="52" viewBox="0 0 24 32" fill="currentColor">
+        <polygon points="14,2 5,17 12,17 10,30 19,15 12,15"/>
+      </svg>
+      <span class="splash-wordmark">Splitr</span>
+    </div>
+    <div class="splash-tagline">¿Quién paga esta vez?</div>
+  </div>
+</div>
+
+<!-- Overlay de Countdown (3-2-1) -->
+<div id="countdown-overlay" aria-hidden="true"></div>
+
+<!-- Overlay de Ruleta Rusa -->
+<div id="russian-overlay" role="dialog" aria-modal="true" aria-label="Ruleta Rusa" style="display:none;">
+  <div class="russian-inner">
+    <!-- Revólver SVG animado -->
+    <div class="russian-gun-wrap" id="russian-gun-wrap">
+      <div class="russian-muzzle-flash" id="russian-muzzle-flash" style="display:none;"></div>
+      <svg class="russian-gun" id="russian-gun-svg" viewBox="0 0 160 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cañón con detalle -->
+        <rect x="82" y="44" width="68" height="14" rx="7" fill="#252535" stroke="#555" stroke-width="1.2"/>
+        <rect x="82" y="46" width="64" height="6" rx="3" fill="#1a1a2a" stroke="#444" stroke-width="0.8"/>
+        <rect x="144" y="47" width="12" height="8" rx="2" fill="#111122"/>
+        <!-- Mira -->
+        <rect x="148" y="43" width="4" height="3" rx="0.5" fill="#666"/>
+        <!-- Riel superior -->
+        <rect x="82" y="42" width="60" height="3" rx="1.5" fill="#333344" stroke="#666" stroke-width="0.5"/>
+        <!-- Empuñadura con textura -->
+        <path d="M84 58 L79 95 Q77 100 82 100 L94 100 Q98 100 96 95 L91 58Z" fill="#1e1a2e" stroke="#444" stroke-width="1.2"/>
+        <path d="M83 62 L80 92 M87 62 L84 92 M91 62 L88 92" stroke="#2a2640" stroke-width="1"/>
+        <!-- Gatillo guardamano -->
+        <path d="M85 60 L102 60 L107 78 L85 78Z" fill="#1e1e33" stroke="#444" stroke-width="1"/>
+        <!-- Gatillo -->
+        <path d="M90 64 Q98 69 96 77 Q94 82 91 80" stroke="#888" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <!-- Martillo -->
+        <path d="M82 44 L76 36 Q74 32 78 30 L84 34 L84 44Z" fill="#222233" stroke="#555" stroke-width="1"/>
+        <!-- Tambor (giratorio) — más grande y detallado -->
+        <g id="russian-drum">
+          <!-- Base del tambor -->
+          <circle cx="72" cy="58" r="26" fill="#151525" stroke="#3a3a5a" stroke-width="2"/>
+          <!-- Detalle interior -->
+          <circle cx="72" cy="58" r="22" fill="none" stroke="#252535" stroke-width="1"/>
+          <!-- 6 cámaras con detalle -->
+          <circle id="chamber-0" cx="72" cy="37" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <circle id="chamber-1" cx="89" cy="47" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <circle id="chamber-2" cx="89" cy="69" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <circle id="chamber-3" cx="72" cy="79" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <circle id="chamber-4" cx="55" cy="69" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <circle id="chamber-5" cx="55" cy="47" r="6" fill="#0a0a1a" stroke="#555" stroke-width="1.5"/>
+          <!-- Reflejos en cámaras -->
+          <circle cx="69" cy="34" r="1.5" fill="rgba(255,255,255,0.15)"/>
+          <circle cx="86" cy="44" r="1.5" fill="rgba(255,255,255,0.15)"/>
+          <circle cx="86" cy="66" r="1.5" fill="rgba(255,255,255,0.15)"/>
+          <!-- Eje central del tambor -->
+          <circle cx="72" cy="58" r="5" fill="#2a2a3a" stroke="#666" stroke-width="1.5"/>
+          <circle cx="72" cy="58" r="2.5" fill="#444"/>
+          <circle cx="72" cy="58" r="1" fill="#666"/>
+        </g>
+        <!-- Marco del tambor (no gira) -->
+        <path d="M72 32 Q98 32 98 58 Q98 84 72 84" fill="none" stroke="#333" stroke-width="2"/>
+        <!-- Reflejo en el cañón -->
+        <rect x="84" y="45" width="56" height="2" rx="1" fill="rgba(255,255,255,0.08)"/>
+      </svg>
+    </div>
+
+    <!-- Estado del tambor: bullets restantes -->
+    <div class="russian-chambers" id="russian-chambers">
+      <!-- Generado por JS -->
+    </div>
+
+    <!-- Turno actual -->
+    <div class="russian-turn-label" id="russian-turn-label">Girando el tambor...</div>
+    <div class="russian-player" id="russian-player"></div>
+    <div class="russian-odds" id="russian-odds"></div>
+
+    <!-- Botón principal -->
+    <button class="btn btn-impact russian-trigger-btn" id="russian-trigger" style="display:none;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M9 11V6a2 2 0 0 1 4 0v5"/>
+        <path d="M13 11v-1a2 2 0 0 1 4 0v3c0 3-2 5-5 5H9a5 5 0 0 1-5-5v-2a2 2 0 0 1 4 0v1"/>
+      </svg>
+      JALAR EL GATILLO
+    </button>
+
+    <!-- Resultado -->
+    <div class="russian-result" id="russian-result" style="display:none;"></div>
+
+    <!-- Cerrar -->
+    <button class="btn btn-accent" id="russian-close" style="display:none;margin-top:8px;">
+      Cerrar
+    </button>
+  </div>
+</div>
+
+<!-- Overlay de RULETA — alternativa cinematográfica al barrido de avatares -->
+<div id="roulette-overlay" role="dialog" aria-modal="true" aria-label="Ruleta de sorteo" style="display:none;">
+  <canvas id="roulette-canvas" aria-hidden="true"></canvas>
+  <div id="roulette-pointer" aria-hidden="true">
+    <svg width="28" height="36" viewBox="0 0 28 36" fill="none">
+      <path d="M14 36 L0 0 L28 0 Z" fill="var(--color-accent)"/>
+      <path d="M14 36 L0 0 L28 0 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div id="roulette-label" aria-live="polite"></div>
+</div>
+
+<!-- Panel de selección de tema -->
+<div id="theme-panel" class="theme-panel" role="dialog" aria-label="Elegir tema" style="display:none;">
+  <div class="theme-panel-inner">
+    <div class="theme-panel-title">Tema de color</div>
+    <div class="theme-swatches">
+      <button class="theme-swatch active" data-theme="cyberpunk"><span class="swatch-preview" style="--s1:#7B2FBE;--s2:#00F5FF;--s3:#FF006E;"></span><span class="swatch-label">Cyberpunk</span></button>
+      <button class="theme-swatch" data-theme="neonpink"><span class="swatch-preview" style="--s1:#CC00FF;--s2:#FF77E9;--s3:#FF006E;"></span><span class="swatch-label">Neon Pink</span></button>
+      <button class="theme-swatch" data-theme="vaporwave"><span class="swatch-preview" style="--s1:#FF71CE;--s2:#01CDFE;--s3:#B967FF;"></span><span class="swatch-label">Vaporwave</span></button>
+      <button class="theme-swatch" data-theme="candy"><span class="swatch-preview" style="--s1:#AA00FF;--s2:#00FFD0;--s3:#FF4488;"></span><span class="swatch-label">Candy</span></button>
+      <button class="theme-swatch" data-theme="sakura"><span class="swatch-preview" style="--s1:#E91E8C;--s2:#FFB7D5;--s3:#FF006E;"></span><span class="swatch-label">Sakura</span></button>
+      <button class="theme-swatch" data-theme="fire"><span class="swatch-preview" style="--s1:#FF4500;--s2:#FFB800;--s3:#FF1744;"></span><span class="swatch-label">Fuego</span></button>
+      <button class="theme-swatch" data-theme="blood"><span class="swatch-preview" style="--s1:#8B0000;--s2:#FF2020;--s3:#FF6B00;"></span><span class="swatch-label">Blood Red</span></button>
+      <button class="theme-swatch" data-theme="lava"><span class="swatch-preview" style="--s1:#E85000;--s2:#FF9500;--s3:#FF2200;"></span><span class="swatch-label">Lava</span></button>
+      <button class="theme-swatch" data-theme="sunset"><span class="swatch-preview" style="--s1:#C2185B;--s2:#FF9800;--s3:#FF5722;"></span><span class="swatch-label">Atardecer</span></button>
+      <button class="theme-swatch" data-theme="goldrush"><span class="swatch-preview" style="--s1:#CC8800;--s2:#FFD700;--s3:#FF6600;"></span><span class="swatch-label">Gold Rush</span></button>
+      <button class="theme-swatch" data-theme="matrix"><span class="swatch-preview" style="--s1:#00AA00;--s2:#00FF41;--s3:#39FF14;"></span><span class="swatch-label">Matrix</span></button>
+      <button class="theme-swatch" data-theme="toxic"><span class="swatch-preview" style="--s1:#1DB800;--s2:#CCFF00;--s3:#39FF14;"></span><span class="swatch-label">Toxic</span></button>
+      <button class="theme-swatch" data-theme="jungle"><span class="swatch-preview" style="--s1:#2D8B00;--s2:#A8FF3E;--s3:#FFB300;"></span><span class="swatch-label">Jungle</span></button>
+      <button class="theme-swatch" data-theme="storm"><span class="swatch-preview" style="--s1:#3355FF;--s2:#EEFF00;--s3:#FF3300;"></span><span class="swatch-label">Storm</span></button>
+      <button class="theme-swatch" data-theme="ocean"><span class="swatch-preview" style="--s1:#0077B6;--s2:#48CAE4;--s3:#00B4D8;"></span><span class="swatch-label">Océano</span></button>
+      <button class="theme-swatch" data-theme="deepspace"><span class="swatch-preview" style="--s1:#1B1464;--s2:#6A5ACD;--s3:#00CFFF;"></span><span class="swatch-label">Deep Space</span></button>
+      <button class="theme-swatch" data-theme="midnight"><span class="swatch-preview" style="--s1:#1a3aff;--s2:#7EB8FF;--s3:#FF4D8B;"></span><span class="swatch-label">Midnight</span></button>
+      <button class="theme-swatch" data-theme="slate"><span class="swatch-preview" style="--s1:#4A7CFF;--s2:#A0CFFF;--s3:#FF5566;"></span><span class="swatch-label">Slate</span></button>
+      <button class="theme-swatch" data-theme="arctic"><span class="swatch-preview" style="--s1:#2563eb;--s2:#06b6d4;--s3:#8b5cf6;background:#eef2ff;"></span><span class="swatch-label">Arctic</span></button>
+      <button class="theme-swatch" data-theme="light"><span class="swatch-preview" style="--s1:#6B1FAE;--s2:#0099CC;--s3:#E0005E;background:#e8e8f8;"></span><span class="swatch-label">Claro</span></button>
+    </div>
+  </div>
+</div>
+<div id="theme-backdrop" style="display:none;position:fixed;inset:0;z-index:39;"></div>
+
+<!-- Menú contextual de avatar (aparece al tocar) -->
+<div id="avatar-menu" class="avatar-menu" role="dialog" aria-label="Opciones del participante" style="display:none;">
+  <div class="avatar-menu-arrow"></div>
+  <div class="avatar-menu-inner">
+    <!-- Suerte -->
+    <div class="avatar-menu-luck" id="avatar-menu-luck">
+      <span class="luck-menu-label">Probabilidad de ser elegido</span>
+      <div class="luck-stars" id="luck-stars" role="group" aria-label="Nivel de suerte">
+        <button class="luck-star" data-luck="1" title="Muy probable (5×)">
+          <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M8 2C5.2 2 3 4.2 3 7c0 1.6.8 3 2 3.9V12h6v-1.1c1.2-.9 2-2.3 2-3.9 0-2.8-2.2-5-5-5z" opacity="0.9"/><rect x="5.5" y="12" width="1.5" height="2" rx="0.5"/><rect x="9" y="12" width="1.5" height="2" rx="0.5"/><rect x="5.5" y="14" width="5" height="0.8" rx="0.4"/><circle cx="6" cy="8" r="1.3" fill="white"/><circle cx="10" cy="8" r="1.3" fill="white"/></svg>
+        </button>
+        <button class="luck-star" data-luck="2" title="Probable (4×)">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="5.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="6.5" r="0.8" fill="currentColor"/><path d="M5.5 11C6.5 9.5 9.5 9.5 10.5 11" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+        <button class="luck-star" data-luck="3" title="Normal (3×)">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="5.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="6.5" r="0.8" fill="currentColor"/><line x1="5.5" y1="10.5" x2="10.5" y2="10.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+        <button class="luck-star" data-luck="4" title="Poco probable (2×)">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><circle cx="5.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="10.5" cy="6.5" r="0.8" fill="currentColor"/><path d="M5.5 9.5C6.5 11.5 9.5 11.5 10.5 9.5" stroke="currentColor" stroke-width="1.3"/></svg>
+        </button>
+        <button class="luck-star" data-luck="5" title="Muy poco probable (1×)">
+          <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M8 1l1.8 3.6L14 5.4l-3 2.9.7 4.1L8 10.4l-3.7 2 .7-4.1L2 5.4l4.2-.8z" opacity="0.9"/></svg>
+        </button>
+      </div>
+      <span class="luck-menu-hint" id="luck-menu-hint">Normal · 33%</span>
+    </div>
+    <div class="avatar-menu-divider"></div>
+    <button class="avatar-menu-btn" id="avatar-menu-pause">
+      <span class="avatar-menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+      </span>
+      <span class="avatar-menu-label">Pausar</span>
+      <span class="avatar-menu-sub">No participa esta ronda</span>
+    </button>
+    <div class="avatar-menu-divider"></div>
+    <button class="avatar-menu-btn danger" id="avatar-menu-delete">
+      <span class="avatar-menu-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </span>
+      <span class="avatar-menu-label">Eliminar</span>
+      <span class="avatar-menu-sub">Borrarlo del grupo</span>
+    </button>
+  </div>
+</div>
+<!-- Backdrop invisible para cerrar el menú -->
+<div id="avatar-menu-backdrop" style="display:none;position:fixed;inset:0;z-index:49;"></div>
+
+<!-- Contenedor de partículas de celebración -->
+<div id="particles" aria-hidden="true"></div>
+
+
+<!-- ══════════════════════════════════════════
+     MODAL DE GRUPOS (bottom sheet)
+══════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-groups" role="dialog" aria-modal="true" aria-label="Grupos guardados">
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+
+    <h3 class="modal-title">Mis Grupos</h3>
+
+    <!-- Lista de grupos guardados -->
+    <div id="groups-list" role="list">
+      <!-- Renderizado dinámico -->
+    </div>
+
+    <div class="neon-divider"></div>
+
+    <!-- Guardar grupo actual -->
+    <p style="font-size:0.8rem;color:var(--color-text-dim);margin-bottom:4px;">
+      Guardar participantes actuales como:
+    </p>
+    <div class="input-group">
+      <input
+        type="text"
+        class="input-text"
+        id="input-group-name"
+        placeholder="Nombre del grupo..."
+        maxlength="40"
+        aria-label="Nombre del grupo a guardar"
+      >
+      <button class="btn btn-primary" id="btn-save-group">Guardar</button>
+    </div>
+
+    <button class="btn btn-accent" id="btn-modal-close" style="margin-top:4px;">Cerrar</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     BANNER DE INSTALACIÓN PWA
+══════════════════════════════════════════ -->
+<div id="install-banner" role="complementary" aria-label="Instalar app">
+  <div class="install-banner-icon" aria-hidden="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <rect x="5" y="2" width="14" height="20" rx="2"/>
+      <line x1="12" y1="18" x2="12" y2="18" stroke-width="3"/>
+      <path d="M12 6v6l3 3"/>
+    </svg>
+  </div>
+  <div class="install-banner-text">
+    <div class="install-banner-title">Instalar Splitr</div>
+    <div class="install-banner-sub">Disponible sin conexión, como app nativa</div>
+  </div>
+  <button class="btn btn-primary" id="btn-install" style="padding:10px 16px;font-size:0.85rem;">Instalar</button>
+  <button class="btn btn-icon" id="btn-install-dismiss" aria-label="Descartar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+</div>
+
+
+<!-- Toast de notificación -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Modal de ayuda / documentación -->
+<div class="modal-backdrop" id="modal-help" style="display:none;" role="dialog" aria-modal="true" aria-label="Guía de Splitr">
+  <div class="modal-sheet modal-sheet-tall">
+    <div class="modal-handle" aria-hidden="true"></div>
+
+    <!-- Tabs de navegación -->
+    <div class="help-tabs">
+      <button class="help-tab active" data-htab="install">Instalar</button>
+      <button class="help-tab" data-htab="modes">Modos</button>
+      <button class="help-tab" data-htab="features">Funciones</button>
+    </div>
+
+    <!-- Panel: Instalar -->
+    <div class="help-panel active" id="htab-install">
+      <p class="help-intro">Añade Splitr a tu pantalla de inicio para usarla sin conexión.</p>
+      <div class="help-platform">
+        <div class="help-platform-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="18" r="1" fill="currentColor"/></svg>
+        </div>
+        <div>
+          <div class="help-platform-label">Android · Chrome</div>
+          <div class="help-platform-steps">Menú (3 puntos) → Añadir a pantalla de inicio</div>
+        </div>
+      </div>
+      <div class="help-platform">
+        <div class="help-platform-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10"/><path d="M17 2.5C17 2.5 19 6 19 10"/></svg>
+        </div>
+        <div>
+          <div class="help-platform-label">iPhone · Safari</div>
+          <div class="help-platform-steps">Botón compartir → Añadir a pantalla de inicio</div>
+        </div>
+      </div>
+      <div class="help-platform">
+        <div class="help-platform-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <div class="help-platform-label">PC · Chrome / Edge</div>
+          <div class="help-platform-steps">Icono de instalación en la barra de direcciones</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel: Modos -->
+    <div class="help-panel" id="htab-modes" style="display:none;">
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
+        <div><strong>Normal</strong> — Elige una persona al azar. La suerte ajusta la probabilidad.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4C8.7 4 6 6.7 6 10c0 2.2 1.1 4.1 2.8 5.2V17h6.4v-1.8C16.9 14.1 18 12.2 18 10c0-3.3-2.7-6-6-6z"/><line x1="9.5" y1="20" x2="14.5" y2="20"/></svg>
+        <div><strong>Eliminación</strong> — El elegido queda fuera. Ronda hasta que quede uno.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/><path d="M3 21v-1a6 6 0 0 1 6-6h6a6 6 0 0 1 6 6v1"/></svg>
+        <div><strong>Equipo</strong> — Elige N personas al azar de una vez.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12" x2="20" y2="12"/><line x1="10" y1="18" x2="20" y2="18"/><path d="M4 6h2v4H4M4 14h2l-2 4h4" stroke-width="1.4"/></svg>
+        <div><strong>Orden</strong> — Genera un orden completo y lo revela uno a uno.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div><strong>Venganza</strong> — El último elegido tiene 5× más probabilidades en la siguiente ronda.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5L3 9l5 5 5-5-2-6H8z"/><path d="M16 21h3l2-6-5-5-5 5 2 6h3z"/></svg>
+        <div><strong>Duelo</strong> — Toca 2 avatares para enfrentarlos. El azar decide.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 3h5v5M8 21H3v-5M21 3l-7 7M3 21l7-7"/></svg>
+        <div><strong>Dividir</strong> — Divide al grupo en 2 equipos aleatorios al instante.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <div><strong>Ruleta Rusa</strong> — Turno por turno, cada jugador jala el gatillo. 6 cámaras, 1 bala.</div>
+      </div>
+    </div>
+
+    <!-- Panel: Funciones -->
+    <div class="help-panel" id="htab-features" style="display:none;">
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11V6a2 2 0 0 1 4 0v5"/><path d="M13 11v-1a2 2 0 0 1 4 0v3c0 3-2 5-5 5H9a5 5 0 0 1-5-5v-2a2 2 0 0 1 4 0v1"/></svg>
+        <div><strong>Sorteo por voz</strong> — Di "Sortear", "Venga" o "Ya" para disparar (Chrome/Android).</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h7"/><circle cx="17" cy="17" r="4"/><path d="M17 15v2l1 1"/></svg>
+        <div><strong>Suerte</strong> — Toca un avatar para ajustar su probabilidad (1=máxima, 5=mínima). Muestra el % real.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+        <div><strong>Grupos guardados</strong> — Guarda tus grupos con nombre y recárgalos en un toque.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <div><strong>Compartir resultado</strong> — Genera una tarjeta PNG y la comparte por WhatsApp o descarga.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <div><strong>Stats + historial</strong> — Podio, donut chart y lista cronológica de sorteos. Persiste entre sesiones.</div>
+      </div>
+      <div class="help-mode-item">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15"/></svg>
+        <div><strong>Ajustes</strong> — Sonido, vibración, partículas, flash, brillo del glow, velocidad del countdown y ruleta.</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-help-close" style="width:100%;margin-top:var(--space-md);">Cerrar</button>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- Modal de configuración -->
+<div class="modal-backdrop" id="modal-settings" role="dialog" aria-modal="true" aria-label="Ajustes">
+  <div class="modal-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+    <h3 class="modal-title">Ajustes</h3>
+
+    <!-- Pregunta por defecto -->
+    <div class="settings-field">
+      <label class="settings-label" for="input-default-question">Pregunta por defecto</label>
+      <input type="text" class="input-text" id="input-default-question"
+             placeholder="¿Quién paga?" maxlength="60" autocomplete="off">
+      <p class="settings-hint">Se precarga al abrir la app</p>
+    </div>
+
+    <div class="neon-divider"></div>
+
+    <!-- Sonido -->
+    <div class="settings-toggle-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <span>Efectos de sonido</span>
+      </div>
+      <label class="settings-switch" aria-label="Activar sonido">
+        <input type="checkbox" id="setting-sound" checked>
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <!-- Vibración -->
+    <div class="settings-toggle-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 8l-3 4 3 4M19 8l3 4-3 4M8 5l4-3 4 3M8 19l4 3 4-3M12 12m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0"/></svg>
+        <span>Vibración háptica</span>
+      </div>
+      <label class="settings-switch" aria-label="Activar vibración">
+        <input type="checkbox" id="setting-vibration" checked>
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <!-- Partículas -->
+    <div class="settings-toggle-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+        <span>Partículas de celebración</span>
+      </div>
+      <label class="settings-switch" aria-label="Activar partículas">
+        <input type="checkbox" id="setting-particles" checked>
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <!-- Flash de impacto -->
+    <div class="settings-toggle-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13,2 4.5,13.5 11,13.5 11,22 19.5,10.5 13,10.5"/></svg>
+        <span>Flash de impacto</span>
+      </div>
+      <label class="settings-switch" aria-label="Activar flash">
+        <input type="checkbox" id="setting-flash" checked>
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <!-- Animación Ruleta -->
+    <div class="settings-toggle-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/><path d="M3.05 11a9 9 0 1 1 .5 4.5"/><path d="M3 16l-1 4 4-1"/></svg>
+        <span>Animación tipo Ruleta</span>
+      </div>
+      <label class="settings-switch" aria-label="Activar ruleta">
+        <input type="checkbox" id="setting-roulette">
+        <span class="switch-track"></span>
+      </label>
+    </div>
+
+    <!-- Brillo del glow -->
+    <div class="settings-slider-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span>Brillo del glow</span>
+      </div>
+      <div class="settings-slider-wrap">
+        <input type="range" class="settings-slider" id="setting-glow" min="0" max="100" value="100">
+        <span class="settings-slider-val" id="setting-glow-val">100%</span>
+      </div>
+    </div>
+
+    <!-- Velocidad del countdown -->
+    <div class="settings-slider-row">
+      <div class="settings-toggle-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Velocidad del sorteo</span>
+      </div>
+      <div class="settings-slider-wrap">
+        <input type="range" class="settings-slider" id="setting-speed" min="50" max="150" value="100">
+        <span class="settings-slider-val" id="setting-speed-val">1×</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:var(--space-sm);margin-top:var(--space-sm);">
+      <button class="btn btn-primary" id="btn-settings-save" style="flex:1;">Guardar</button>
+      <button class="btn btn-accent"  id="btn-settings-cancel">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Módulo JS principal (ES Modules) -->
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>

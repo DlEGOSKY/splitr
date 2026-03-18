@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a0a2e"/>
+      <stop offset="100%" stop-color="#090912"/>
+    </radialGradient>
+    <linearGradient id="bolt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F5FF"/>
+      <stop offset="50%" stop-color="#7B2FBE"/>
+      <stop offset="100%" stop-color="#FF006E"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+
+  <!-- Borde neón -->
+  <rect width="192" height="192" rx="40" fill="none" stroke="#7B2FBE" stroke-width="3" opacity="0.6"/>
+
+  <!-- Rayo central (símbolo de la app) -->
+  <path d="M108 20 L72 100 L96 100 L84 172 L128 84 L104 84 Z"
+        fill="url(#bolt)"
+        filter="url(#glow)"
+        opacity="0.95"/>
+
+  <!-- Signo de interrogación como overlay sutil -->
+  <text x="96" y="115"
+        font-family="'Barlow Condensed', sans-serif"
+        font-weight="900"
+        font-size="28"
+        fill="white"
+        text-anchor="middle"
+        opacity="0.15">?</text>
+</svg>

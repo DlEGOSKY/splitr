@@ -1,0 +1,364 @@
+/* ============================================================
+   THEMES.CSS — Sistema de temas de color
+   Cambiar data-theme en <html> activa el tema.
+   ============================================================ */
+
+/* ── CYBERPUNK NEON (por defecto, definido en :root en base.css) ── */
+[data-theme="cyberpunk"] {
+  --color-bg:            #090912;
+  --color-bg-2:          #0d0d1a;
+  --color-bg-card:       #111127;
+  --color-primary:       #7B2FBE;
+  --color-primary-light: #9B4FDE;
+  --color-accent:        #00F5FF;
+  --color-impact:        #FF006E;
+  --color-text:          #E8E8F0;
+  --color-text-dim:      #6B6B8A;
+  --color-border:        rgba(123, 47, 190, 0.3);
+  --color-border-bright: rgba(0, 245, 255, 0.5);
+  --glow-primary: 0 0 20px rgba(123,47,190,0.6), 0 0 40px rgba(123,47,190,0.3);
+  --glow-accent:  0 0 15px rgba(0,245,255,0.7),  0 0 30px rgba(0,245,255,0.3);
+  --glow-impact:  0 0 20px rgba(255,0,110,0.8),  0 0 40px rgba(255,0,110,0.4);
+}
+
+/* ── FUEGO ── */
+[data-theme="fire"] {
+  --color-bg:            #0a0500;
+  --color-bg-2:          #150900;
+  --color-bg-card:       #1c0d00;
+  --color-primary:       #FF4500;
+  --color-primary-light: #FF6A1A;
+  --color-accent:        #FFB800;
+  --color-impact:        #FF1744;
+  --color-text:          #FFE8D0;
+  --color-text-dim:      #9A6040;
+  --color-border:        rgba(255,69,0,0.3);
+  --color-border-bright: rgba(255,184,0,0.6);
+  --glow-primary: 0 0 20px rgba(255,69,0,0.7),  0 0 40px rgba(255,69,0,0.3);
+  --glow-accent:  0 0 15px rgba(255,184,0,0.8), 0 0 30px rgba(255,184,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,23,68,0.8), 0 0 40px rgba(255,23,68,0.4);
+}
+
+/* ── MATRIX ── */
+[data-theme="matrix"] {
+  --color-bg:            #000300;
+  --color-bg-2:          #000800;
+  --color-bg-card:       #001200;
+  --color-primary:       #00AA00;
+  --color-primary-light: #00CC00;
+  --color-accent:        #00FF41;
+  --color-impact:        #39FF14;
+  --color-text:          #C8FFC8;
+  --color-text-dim:      #2E6B2E;
+  --color-border:        rgba(0,170,0,0.35);
+  --color-border-bright: rgba(0,255,65,0.6);
+  --glow-primary: 0 0 20px rgba(0,170,0,0.6),  0 0 40px rgba(0,170,0,0.3);
+  --glow-accent:  0 0 15px rgba(0,255,65,0.8), 0 0 30px rgba(0,255,65,0.4);
+  --glow-impact:  0 0 20px rgba(57,255,20,0.8),0 0 40px rgba(57,255,20,0.4);
+}
+
+/* ── OCÉANO ── */
+[data-theme="ocean"] {
+  --color-bg:            #020810;
+  --color-bg-2:          #040f1a;
+  --color-bg-card:       #071525;
+  --color-primary:       #0077B6;
+  --color-primary-light: #0096C7;
+  --color-accent:        #48CAE4;
+  --color-impact:        #00B4D8;
+  --color-text:          #D0EEFF;
+  --color-text-dim:      #4A7A9B;
+  --color-border:        rgba(0,119,182,0.35);
+  --color-border-bright: rgba(72,202,228,0.6);
+  --glow-primary: 0 0 20px rgba(0,119,182,0.6),  0 0 40px rgba(0,119,182,0.3);
+  --glow-accent:  0 0 15px rgba(72,202,228,0.8),  0 0 30px rgba(72,202,228,0.4);
+  --glow-impact:  0 0 20px rgba(0,180,216,0.8),   0 0 40px rgba(0,180,216,0.4);
+}
+
+/* ── ATARDECER ── */
+[data-theme="sunset"] {
+  --color-bg:            #0d0008;
+  --color-bg-2:          #160010;
+  --color-bg-card:       #1e0018;
+  --color-primary:       #C2185B;
+  --color-primary-light: #E91E8C;
+  --color-accent:        #FF9800;
+  --color-impact:        #FF5722;
+  --color-text:          #FFE4F0;
+  --color-text-dim:      #8A4060;
+  --color-border:        rgba(194,24,91,0.35);
+  --color-border-bright: rgba(255,152,0,0.6);
+  --glow-primary: 0 0 20px rgba(194,24,91,0.7),  0 0 40px rgba(194,24,91,0.3);
+  --glow-accent:  0 0 15px rgba(255,152,0,0.8),  0 0 30px rgba(255,152,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,87,34,0.8),  0 0 40px rgba(255,87,34,0.4);
+}
+
+/* ── TEMA: LUZ (modo claro) ── */
+[data-theme="light"] {
+  --color-bg:            #f0f0f8;
+  --color-bg-2:          #e4e4f0;
+  --color-bg-card:       #ffffff;
+  --color-primary:       #6B1FAE;
+  --color-primary-light: #8B3FCE;
+  --color-accent:        #0099CC;
+  --color-impact:        #E0005E;
+  --color-text:          #1a1a2e;
+  --color-text-dim:      #6b6b8a;
+  --color-border:        rgba(107,31,174,0.2);
+  --color-border-bright: rgba(0,153,204,0.5);
+  --glow-primary: 0 0 12px rgba(107,31,174,0.25), 0 0 24px rgba(107,31,174,0.12);
+  --glow-accent:  0 0 10px rgba(0,153,204,0.35),  0 0 20px rgba(0,153,204,0.15);
+  --glow-impact:  0 0 12px rgba(224,0,94,0.3),    0 0 24px rgba(224,0,94,0.15);
+}
+
+/* ── NEON PINK ── */
+[data-theme="neonpink"] {
+  --color-bg:            #0a0008;
+  --color-bg-2:          #130010;
+  --color-bg-card:       #1a0018;
+  --color-primary:       #CC00FF;
+  --color-primary-light: #DD44FF;
+  --color-accent:        #FF77E9;
+  --color-impact:        #FF006E;
+  --color-text:          #FFE8FF;
+  --color-text-dim:      #8A4880;
+  --color-border:        rgba(204,0,255,0.3);
+  --color-border-bright: rgba(255,119,233,0.6);
+  --glow-primary: 0 0 20px rgba(204,0,255,0.7),  0 0 40px rgba(204,0,255,0.3);
+  --glow-accent:  0 0 15px rgba(255,119,233,0.8), 0 0 30px rgba(255,119,233,0.4);
+  --glow-impact:  0 0 20px rgba(255,0,110,0.8),   0 0 40px rgba(255,0,110,0.4);
+}
+
+/* ── DEEP SPACE ── */
+[data-theme="deepspace"] {
+  --color-bg:            #03020d;
+  --color-bg-2:          #07051a;
+  --color-bg-card:       #0c0926;
+  --color-primary:       #6A5ACD;
+  --color-primary-light: #8A7AED;
+  --color-accent:        #00CFFF;
+  --color-impact:        #FF6B6B;
+  --color-text:          #DDE8FF;
+  --color-text-dim:      #4A5080;
+  --color-border:        rgba(106,90,205,0.35);
+  --color-border-bright: rgba(0,207,255,0.55);
+  --glow-primary: 0 0 20px rgba(106,90,205,0.6),  0 0 40px rgba(106,90,205,0.3);
+  --glow-accent:  0 0 15px rgba(0,207,255,0.75),  0 0 30px rgba(0,207,255,0.35);
+  --glow-impact:  0 0 20px rgba(255,107,107,0.7), 0 0 40px rgba(255,107,107,0.35);
+}
+
+/* ── TOXIC GREEN ── */
+[data-theme="toxic"] {
+  --color-bg:            #010a00;
+  --color-bg-2:          #021500;
+  --color-bg-card:       #041e00;
+  --color-primary:       #1DB800;
+  --color-primary-light: #39FF14;
+  --color-accent:        #CCFF00;
+  --color-impact:        #39FF14;
+  --color-text:          #DDFFCC;
+  --color-text-dim:      #3A6B20;
+  --color-border:        rgba(29,184,0,0.35);
+  --color-border-bright: rgba(204,255,0,0.6);
+  --glow-primary: 0 0 20px rgba(29,184,0,0.65),  0 0 40px rgba(29,184,0,0.3);
+  --glow-accent:  0 0 15px rgba(204,255,0,0.8),  0 0 30px rgba(204,255,0,0.4);
+  --glow-impact:  0 0 20px rgba(57,255,20,0.85), 0 0 40px rgba(57,255,20,0.4);
+}
+
+/* ── BLOOD RED ── */
+[data-theme="blood"] {
+  --color-bg:            #0a0000;
+  --color-bg-2:          #150000;
+  --color-bg-card:       #1e0000;
+  --color-primary:       #CC0000;
+  --color-primary-light: #EE2020;
+  --color-accent:        #FF6B00;
+  --color-impact:        #FF2020;
+  --color-text:          #FFE8E8;
+  --color-text-dim:      #8A3030;
+  --color-border:        rgba(204,0,0,0.35);
+  --color-border-bright: rgba(255,107,0,0.6);
+  --glow-primary: 0 0 20px rgba(204,0,0,0.7),   0 0 40px rgba(204,0,0,0.35);
+  --glow-accent:  0 0 15px rgba(255,107,0,0.8), 0 0 30px rgba(255,107,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,32,32,0.85),0 0 40px rgba(255,32,32,0.4);
+}
+
+/* ── ARCTIC (blanco-azul glacial) ── */
+[data-theme="arctic"] {
+  --color-bg:            #f8faff;
+  --color-bg-2:          #eef2ff;
+  --color-bg-card:       #ffffff;
+  --color-primary:       #2563eb;
+  --color-primary-light: #3b82f6;
+  --color-accent:        #06b6d4;
+  --color-impact:        #8b5cf6;
+  --color-text:          #0f172a;
+  --color-text-dim:      #64748b;
+  --color-border:        rgba(37,99,235,0.18);
+  --color-border-bright: rgba(6,182,212,0.5);
+  --glow-primary: 0 0 12px rgba(37,99,235,0.3),  0 0 24px rgba(37,99,235,0.12);
+  --glow-accent:  0 0 10px rgba(6,182,212,0.4),  0 0 20px rgba(6,182,212,0.15);
+  --glow-impact:  0 0 12px rgba(139,92,246,0.35), 0 0 24px rgba(139,92,246,0.15);
+}
+
+/* ── GOLD RUSH (dorado/negro) ── */
+[data-theme="goldrush"] {
+  --color-bg:            #0a0800;
+  --color-bg-2:          #140f00;
+  --color-bg-card:       #1c1500;
+  --color-primary:       #CC8800;
+  --color-primary-light: #FFAA00;
+  --color-accent:        #FFD700;
+  --color-impact:        #FF6600;
+  --color-text:          #FFF8E0;
+  --color-text-dim:      #8A7020;
+  --color-border:        rgba(204,136,0,0.35);
+  --color-border-bright: rgba(255,215,0,0.6);
+  --glow-primary: 0 0 20px rgba(204,136,0,0.7),  0 0 40px rgba(204,136,0,0.3);
+  --glow-accent:  0 0 15px rgba(255,215,0,0.85), 0 0 30px rgba(255,215,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,102,0,0.75), 0 0 40px rgba(255,102,0,0.35);
+}
+
+/* ── VAPORWAVE (rosa/lila retro) ── */
+[data-theme="vaporwave"] {
+  --color-bg:            #0d0018;
+  --color-bg-2:          #160024;
+  --color-bg-card:       #1e0030;
+  --color-primary:       #FF71CE;
+  --color-primary-light: #FF99DD;
+  --color-accent:        #01CDFE;
+  --color-impact:        #B967FF;
+  --color-text:          #FFE8FF;
+  --color-text-dim:      #8A50AA;
+  --color-border:        rgba(255,113,206,0.3);
+  --color-border-bright: rgba(1,205,254,0.55);
+  --glow-primary: 0 0 20px rgba(255,113,206,0.7), 0 0 40px rgba(255,113,206,0.3);
+  --glow-accent:  0 0 15px rgba(1,205,254,0.8),   0 0 30px rgba(1,205,254,0.35);
+  --glow-impact:  0 0 20px rgba(185,103,255,0.75), 0 0 40px rgba(185,103,255,0.35);
+}
+
+/* ── JUNGLE (verde selva oscuro) ── */
+[data-theme="jungle"] {
+  --color-bg:            #020d00;
+  --color-bg-2:          #051800;
+  --color-bg-card:       #082200;
+  --color-primary:       #2D8B00;
+  --color-primary-light: #44BB00;
+  --color-accent:        #A8FF3E;
+  --color-impact:        #FFB300;
+  --color-text:          #EAFFCC;
+  --color-text-dim:      #3A6B20;
+  --color-border:        rgba(45,139,0,0.35);
+  --color-border-bright: rgba(168,255,62,0.55);
+  --glow-primary: 0 0 20px rgba(45,139,0,0.65),   0 0 40px rgba(45,139,0,0.3);
+  --glow-accent:  0 0 15px rgba(168,255,62,0.75),  0 0 30px rgba(168,255,62,0.35);
+  --glow-impact:  0 0 20px rgba(255,179,0,0.75),   0 0 40px rgba(255,179,0,0.35);
+}
+
+/* ── MIDNIGHT (azul medianoche profundo) ── */
+[data-theme="midnight"] {
+  --color-bg:            #00020f;
+  --color-bg-2:          #000418;
+  --color-bg-card:       #000820;
+  --color-primary:       #1a3aff;
+  --color-primary-light: #3a5aff;
+  --color-accent:        #7EB8FF;
+  --color-impact:        #FF4D8B;
+  --color-text:          #d0dcff;
+  --color-text-dim:      #3A50AA;
+  --color-border:        rgba(26,58,255,0.3);
+  --color-border-bright: rgba(126,184,255,0.55);
+  --glow-primary: 0 0 20px rgba(26,58,255,0.6),   0 0 40px rgba(26,58,255,0.28);
+  --glow-accent:  0 0 15px rgba(126,184,255,0.7),  0 0 30px rgba(126,184,255,0.3);
+  --glow-impact:  0 0 20px rgba(255,77,139,0.7),   0 0 40px rgba(255,77,139,0.32);
+}
+
+/* ── LAVA (naranja volcánico sobre negro) ── */
+[data-theme="lava"] {
+  --color-bg:            #0a0300;
+  --color-bg-2:          #150600;
+  --color-bg-card:       #1e0900;
+  --color-primary:       #E85000;
+  --color-primary-light: #FF6600;
+  --color-accent:        #FF9500;
+  --color-impact:        #FF2200;
+  --color-text:          #FFF0E0;
+  --color-text-dim:      #8A4020;
+  --color-border:        rgba(232,80,0,0.35);
+  --color-border-bright: rgba(255,149,0,0.6);
+  --glow-primary: 0 0 20px rgba(232,80,0,0.7),  0 0 40px rgba(232,80,0,0.3);
+  --glow-accent:  0 0 15px rgba(255,149,0,0.8), 0 0 30px rgba(255,149,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,34,0,0.8),  0 0 40px rgba(255,34,0,0.4);
+}
+
+/* ── SAKURA (rosa japonés) ── */
+[data-theme="sakura"] {
+  --color-bg:            #0d0008;
+  --color-bg-2:          #180010;
+  --color-bg-card:       #200015;
+  --color-primary:       #E91E8C;
+  --color-primary-light: #FF4DB0;
+  --color-accent:        #FFB7D5;
+  --color-impact:        #FF006E;
+  --color-text:          #FFE8F4;
+  --color-text-dim:      #8A3060;
+  --color-border:        rgba(233,30,140,0.3);
+  --color-border-bright: rgba(255,183,213,0.55);
+  --glow-primary: 0 0 20px rgba(233,30,140,0.7), 0 0 40px rgba(233,30,140,0.3);
+  --glow-accent:  0 0 15px rgba(255,183,213,0.7),0 0 30px rgba(255,183,213,0.3);
+  --glow-impact:  0 0 20px rgba(255,0,110,0.8),  0 0 40px rgba(255,0,110,0.4);
+}
+
+/* ── SLATE (gris antracita elegante) ── */
+[data-theme="slate"] {
+  --color-bg:            #080a0f;
+  --color-bg-2:          #0f1218;
+  --color-bg-card:       #161a22;
+  --color-primary:       #4A7CFF;
+  --color-primary-light: #6A9CFF;
+  --color-accent:        #A0CFFF;
+  --color-impact:        #FF5566;
+  --color-text:          #E8EDF8;
+  --color-text-dim:      #4A5570;
+  --color-border:        rgba(74,124,255,0.28);
+  --color-border-bright: rgba(160,207,255,0.5);
+  --glow-primary: 0 0 18px rgba(74,124,255,0.55),  0 0 36px rgba(74,124,255,0.25);
+  --glow-accent:  0 0 12px rgba(160,207,255,0.65),  0 0 24px rgba(160,207,255,0.28);
+  --glow-impact:  0 0 18px rgba(255,85,102,0.65),   0 0 36px rgba(255,85,102,0.28);
+}
+
+/* ── CANDY (pastel pop neón) ── */
+[data-theme="candy"] {
+  --color-bg:            #08001a;
+  --color-bg-2:          #100025;
+  --color-bg-card:       #180030;
+  --color-primary:       #AA00FF;
+  --color-primary-light: #CC44FF;
+  --color-accent:        #00FFD0;
+  --color-impact:        #FF4488;
+  --color-text:          #F0E8FF;
+  --color-text-dim:      #6A40AA;
+  --color-border:        rgba(170,0,255,0.32);
+  --color-border-bright: rgba(0,255,208,0.55);
+  --glow-primary: 0 0 20px rgba(170,0,255,0.7),  0 0 40px rgba(170,0,255,0.3);
+  --glow-accent:  0 0 15px rgba(0,255,208,0.8),  0 0 30px rgba(0,255,208,0.35);
+  --glow-impact:  0 0 20px rgba(255,68,136,0.75), 0 0 40px rgba(255,68,136,0.35);
+}
+
+/* ── STORM (tormenta eléctrica) ── */
+[data-theme="storm"] {
+  --color-bg:            #03050e;
+  --color-bg-2:          #060a18;
+  --color-bg-card:       #0a1020;
+  --color-primary:       #3355FF;
+  --color-primary-light: #5577FF;
+  --color-accent:        #EEFF00;
+  --color-impact:        #FF3300;
+  --color-text:          #E0E8FF;
+  --color-text-dim:      #3A4A80;
+  --color-border:        rgba(51,85,255,0.32);
+  --color-border-bright: rgba(238,255,0,0.55);
+  --glow-primary: 0 0 20px rgba(51,85,255,0.65),  0 0 40px rgba(51,85,255,0.28);
+  --glow-accent:  0 0 15px rgba(238,255,0,0.85),  0 0 30px rgba(238,255,0,0.4);
+  --glow-impact:  0 0 20px rgba(255,51,0,0.75),   0 0 40px rgba(255,51,0,0.35);
+}

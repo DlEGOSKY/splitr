@@ -1,0 +1,45 @@
+{
+  "name": "Splitr — ¿Quién Paga?",
+  "short_name": "Splitr",
+  "description": "Selector aleatorio dramático con efectos visuales y sonoros. Elige quién paga, quién hace la tarea o quién es el elegido.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090912",
+  "theme_color": "#090912",
+  "lang": "es",
+  "categories": [
+    "entertainment",
+    "utilities",
+    "social"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Sortear rápido",
+      "short_name": "Sortear",
+      "description": "Abre la app directamente en la pantalla de sorteo",
+      "url": "/index.html",
+      "icons": [
+        {
+          "src": "icons/icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

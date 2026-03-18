@@ -1,0 +1,135 @@
+/* ============================================================
+   BASE.CSS — Reset, custom properties y estilos globales
+   Arquitectura: tokens primero, luego layout raíz
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* ── TOKENS DE DISEÑO ── */
+:root {
+  /* Paleta neón cyberpunk */
+  --color-bg:        #090912;
+  --color-bg-2:      #0d0d1a;
+  --color-bg-card:   #111127;
+  --color-primary:   #7B2FBE;
+  --color-primary-light: #9B4FDE;
+  --color-accent:    #00F5FF;
+  --color-impact:    #FF006E;
+  --color-text:      #E8E8F0;
+  --color-text-dim:  #6B6B8A;
+  --color-border:    rgba(123, 47, 190, 0.3);
+  --color-border-bright: rgba(0, 245, 255, 0.5);
+
+  /* Glow effects */
+  --glow-primary:    0 0 20px rgba(123, 47, 190, 0.6), 0 0 40px rgba(123, 47, 190, 0.3);
+  --glow-accent:     0 0 15px rgba(0, 245, 255, 0.7), 0 0 30px rgba(0, 245, 255, 0.3);
+  --glow-impact:     0 0 20px rgba(255, 0, 110, 0.8), 0 0 40px rgba(255, 0, 110, 0.4);
+
+  /* Tipografía */
+  --font-display:    'Bebas Neue', sans-serif;
+  --font-ui:         'Plus Jakarta Sans', sans-serif;
+
+  /* Espaciado */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+
+  /* Radios */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* Transiciones */
+  --transition-fast: 150ms ease;
+  --transition-med:  300ms ease;
+  --transition-slow: 600ms ease;
+
+  /* Z-index layers */
+  --z-base:    1;
+  --z-overlay: 10;
+  --z-modal:   100;
+  --z-toast:   1000;
+}
+
+/* ── RESET MODERNO ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  /* Textura de ruido sutil sobre el fondo */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(123, 47, 190, 0.15) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ── LAYOUT RAÍZ ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--space-md);
+  position: relative;
+}
+
+/* ── PANTALLAS (vistas de la app) ── */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-md);
+  animation: fadeIn 200ms ease;
+}
+
+.screen.active {
+  display: flex;
+}
+
+/* ── UTILIDADES GLOBALES ── */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+}
+
+.text-center { text-align: center; }
+.text-dim    { color: var(--color-text-dim); }
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg-2); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: var(--radius-pill);
+}
+
+/* Selección de texto */
+::selection {
+  background: rgba(123, 47, 190, 0.4);
+  color: var(--color-accent);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
