@@ -173,6 +173,22 @@ export function initUI() {
     if (m) m.style.display = m.style.display === 'none' ? 'flex' : 'none';
   });
 
+  // Sub-modos del torneo
+  const subDescs = {
+    bracket: 'Bracket completo tipo copa — ves todos los emparejamientos y sorteás cada duelo.',
+    rounds:  'Ronda a ronda — solo ves el duelo actual, avanzas manualmente con animación.',
+    auto:    'Automático — la app sortea todo sola y revela al campeón final.',
+  };
+  document.querySelectorAll('.tournament-sub-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tournament-sub-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _tournamentSubMode = btn.dataset.sub;
+      const descEl = document.getElementById('tournament-sub-desc');
+      if (descEl) descEl.textContent = subDescs[btn.dataset.sub] ?? '';
+    });
+  });
+
   // Tabs del modal de ayuda
   document.querySelectorAll('.help-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -940,6 +956,12 @@ async function handleSortear() {
   // ── MODO RULETA RUSA — flujo propio, no necesita barrido ──
   if (mode === 'russian') {
     launchRussianRoulette(active);
+    return;
+  }
+
+  // ── MODO TORNEO — flujo propio ──
+  if (mode === 'tournament') {
+    launchTournament(active);
     return;
   }
 
@@ -2801,7 +2823,8 @@ function renderHistory() {
 
   const modeLabels = {
     normal: 'Normal', elimination: 'Elim.', team: 'Equipo', order: 'Orden',
-    revenge: 'Venganza', duel: 'Duelo', split: 'Dividir', russian: 'R. Rusa'
+    revenge: 'Venganza', duel: 'Duelo', split: 'Dividir', russian: 'R. Rusa',
+    tournament: 'Torneo'
   };
 
   historyList.innerHTML = history.map((entry, i) => {
@@ -3659,6 +3682,412 @@ function launchRussianRoulette(participants) {
   closeBtn.addEventListener(  'click', closeRussian, { signal: ac.signal });
 
   setTimeout(showTurn, 800);
+}
+
+// ══════════════════════════════════════════════════════════
+// TORNEO — 3 sub-modos: Bracket, Rondas, Auto
+// ══════════════════════════════════════════════════════════
+
+let _tournamentSubMode = 'bracket'; // 'bracket' | 'rounds' | 'auto'
+
+/** Genera un bracket de eliminación directa.
+ *  Rellena con "bye" si el número de participantes no es potencia de 2. */
+function buildBracket(participants) {
+  // Mezclar aleatoriamente
+  const shuffled = [...participants];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const arr = new Uint32Array(1);
+    crypto.getRandomValues(arr);
+    const j = arr[0] % (i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  // Redondear al siguiente potencia de 2
+  const size = Math.pow(2, Math.ceil(Math.log2(Math.max(shuffled.length, 2))));
+  const padded = [...shuffled];
+  while (padded.length < size) padded.push(null); // null = bye
+
+  // Generar rondas
+  const rounds = [];
+  let current = padded.map(p => p ? { id: p.id, name: p.name } : null);
+
+  while (current.length > 1) {
+    const matches = [];
+    for (let i = 0; i < current.length; i += 2) {
+      matches.push({ p1: current[i], p2: current[i+1], winner: null });
+    }
+    rounds.push(matches);
+    // Next round slots (TBD)
+    current = matches.map(() => null);
+  }
+
+  return rounds;
+}
+
+/** Sortea un duelo y devuelve el ganador */
+function sortDuel(p1, p2) {
+  if (!p1) return p2;
+  if (!p2) return p1;
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] % 2 === 0 ? p1 : p2;
+}
+
+/** Encuentra el siguiente match pendiente en el bracket */
+function findNextMatch(rounds) {
+  for (let r = 0; r < rounds.length; r++) {
+    for (let m = 0; m < rounds[r].length; m++) {
+      const match = rounds[r][m];
+      if (match.winner === null && match.p1 !== null && match.p2 !== null) {
+        return { r, m };
+      }
+      // Auto-resolve byes
+      if (match.winner === null && (match.p1 === null || match.p2 === null)) {
+        match.winner = match.p1 ?? match.p2;
+        if (r + 1 < rounds.length) {
+          const nextMatchIdx = Math.floor(m / 2);
+          const slot = m % 2 === 0 ? 'p1' : 'p2';
+          rounds[r + 1][nextMatchIdx][slot] = match.winner;
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/** Nombre de ronda */
+function roundName(rounds, r) {
+  const total = rounds.length;
+  if (r === total - 1) return 'FINAL';
+  if (r === total - 2) return 'SEMIFINAL';
+  if (r === total - 3) return 'CUARTOS';
+  return `RONDA ${r + 1}`;
+}
+
+/** Lanza el overlay de torneo */
+function launchTournament(participants) {
+  const overlay = document.getElementById('tournament-overlay');
+  if (!overlay) return;
+
+  const subMode = _tournamentSubMode;
+  state.set({ phase: 'spinning' });
+
+  // Construir bracket
+  const rounds = buildBracket(participants);
+
+  // Reset overlay
+  overlay.style.display = 'flex';
+  document.getElementById('tournament-champion').style.display = 'none';
+
+  // Mostrar sub-vista
+  ['bracket','rounds','auto'].forEach(v => {
+    const el = document.getElementById(`tournament-${v}-view`);
+    if (el) el.style.display = v === subMode ? 'flex' : 'none';
+  });
+
+  // Título y exit
+  const titleEl = document.getElementById('tournament-title');
+  if (titleEl) titleEl.textContent = subMode === 'bracket' ? 'BRACKET' : subMode === 'rounds' ? 'TORNEO' : 'TORNEO AUTO';
+
+  const exitBtn = document.getElementById('tournament-exit');
+  const ac = new AbortController();
+  exitBtn?.addEventListener('click', () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    state.set({ phase: 'idle', winnerId: null });
+    updateSortButton();
+  }, { signal: ac.signal });
+
+  // Cerrar campeón
+  document.getElementById('tournament-close-champion')?.addEventListener('click', () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    state.set({ phase: 'idle', winnerId: null });
+    updateSortButton();
+  }, { signal: ac.signal });
+
+  if (subMode === 'bracket')  initBracketView(rounds, ac);
+  if (subMode === 'rounds')   initRoundsView(rounds, ac, participants);
+  if (subMode === 'auto')     initAutoView(rounds, ac);
+}
+
+/** Renderiza el bracket visual */
+function renderBracketHTML(rounds) {
+  const bracketEl = document.getElementById('tournament-bracket');
+  if (!bracketEl) return;
+
+  bracketEl.innerHTML = rounds.map((matches, r) => `
+    <div class="bracket-round">
+      <div class="bracket-round-title">${roundName(rounds, r)}</div>
+      ${matches.map(match => `
+        <div class="bracket-match ${match.winner ? 'done' : (match.p1 && match.p2 ? 'active' : '')}">
+          ${[match.p1, match.p2].map(p => {
+            if (!p) return `<div class="bracket-slot"><span class="bracket-slot-tbd">BYE</span></div>`;
+            const c = getAvatarColorsByName(p.name);
+            const isWinner = match.winner?.id === p.id;
+            const isLoser  = match.winner && match.winner.id !== p.id;
+            return `<div class="bracket-slot ${isWinner ? 'winner' : isLoser ? 'loser' : ''}">
+              <div class="bracket-slot-avatar" style="background:${c.gradient};">${escapeHtml(getInitials(p.name))}</div>
+              <span class="bracket-slot-name">${escapeHtml(p.name)}</span>
+              ${isWinner ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="margin-left:auto;flex-shrink:0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>' : ''}
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+function initBracketView(rounds, ac) {
+  renderBracketHTML(rounds);
+
+  const nextBtn = document.getElementById('tournament-next-match');
+  const roundLbl = document.getElementById('tournament-round-label');
+
+  function updateNextBtn() {
+    const next = findNextMatch(rounds);
+    if (next) {
+      const { r, m } = next;
+      const match = rounds[r][m];
+      nextBtn.textContent = `Sortear: ${match.p1.name} vs ${match.p2.name}`;
+      nextBtn.style.display = '';
+      if (roundLbl) roundLbl.textContent = roundName(rounds, r);
+    } else {
+      nextBtn.style.display = 'none';
+    }
+  }
+
+  updateNextBtn();
+
+  nextBtn?.addEventListener('click', () => {
+    const next = findNextMatch(rounds);
+    if (!next) return;
+    const { r, m } = next;
+    const match = rounds[r][m];
+    match.winner = sortDuel(match.p1, match.p2);
+
+    // Propagar al siguiente round
+    if (r + 1 < rounds.length) {
+      const nextMatchIdx = Math.floor(m / 2);
+      const slot = m % 2 === 0 ? 'p1' : 'p2';
+      rounds[r + 1][nextMatchIdx][slot] = match.winner;
+    }
+
+    if (prefs.sound) playWinnerFanfare();
+    if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([20, 10, 40]);
+
+    renderBracketHTML(rounds);
+    updateNextBtn();
+
+    // Comprobar si hay campeón
+    const lastRound = rounds[rounds.length - 1];
+    if (lastRound[0].winner) {
+      setTimeout(() => showChampion(lastRound[0].winner), 600);
+    }
+  }, { signal: ac.signal });
+}
+
+function initRoundsView(rounds, ac, participants) {
+  let currentRoundIdx = 0;
+  let currentMatchIdx = 0;
+
+  const p1El   = document.getElementById('tournament-p1');
+  const p2El   = document.getElementById('tournament-p2');
+  const infoEl = document.getElementById('tournament-match-info');
+  const spinBtn = document.getElementById('tournament-spin-duel');
+  const roundLbl = document.getElementById('tournament-round-label');
+
+  function renderContender(el, player) {
+    if (!el || !player) return;
+    const c = getAvatarColorsByName(player.name);
+    el.innerHTML = `
+      <div class="tournament-contender-avatar" style="background:${c.gradient};" id="tc-${el.id}">
+        ${escapeHtml(getInitials(player.name))}
+      </div>
+      <div class="tournament-contender-name">${escapeHtml(player.name)}</div>`;
+  }
+
+  function showCurrentMatch() {
+    // Resolve byes first
+    findNextMatch(rounds);
+
+    let found = false;
+    for (let r = 0; r < rounds.length; r++) {
+      for (let m = 0; m < rounds[r].length; m++) {
+        if (rounds[r][m].winner === null && rounds[r][m].p1 && rounds[r][m].p2) {
+          currentRoundIdx = r;
+          currentMatchIdx = m;
+          found = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+
+    if (!found) {
+      const champion = rounds[rounds.length-1][0].winner;
+      if (champion) showChampion(champion);
+      return;
+    }
+
+    const match = rounds[currentRoundIdx][currentMatchIdx];
+    renderContender(p1El, match.p1);
+    renderContender(p2El, match.p2);
+
+    const total = rounds[currentRoundIdx].length;
+    const done  = rounds[currentRoundIdx].filter(m => m.winner).length;
+    if (infoEl)   infoEl.textContent = `${roundName(rounds, currentRoundIdx)} · Duelo ${done + 1} de ${total}`;
+    if (roundLbl) roundLbl.textContent = roundName(rounds, currentRoundIdx);
+    if (spinBtn)  { spinBtn.textContent = ''; spinBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Sortear duelo'; }
+
+    // Reset visual
+    const av1 = p1El?.querySelector('.tournament-contender-avatar');
+    const av2 = p2El?.querySelector('.tournament-contender-avatar');
+    if (av1) { av1.classList.remove('winner-glow','loser-fade'); }
+    if (av2) { av2.classList.remove('winner-glow','loser-fade'); }
+  }
+
+  showCurrentMatch();
+
+  spinBtn?.addEventListener('click', () => {
+    const match = rounds[currentRoundIdx][currentMatchIdx];
+    if (match.winner) return;
+
+    match.winner = sortDuel(match.p1, match.p2);
+
+    // Propagate
+    if (currentRoundIdx + 1 < rounds.length) {
+      const nextMatchIdx = Math.floor(currentMatchIdx / 2);
+      const slot = currentMatchIdx % 2 === 0 ? 'p1' : 'p2';
+      rounds[currentRoundIdx + 1][nextMatchIdx][slot] = match.winner;
+    }
+
+    // Visual feedback
+    const av1 = p1El?.querySelector('.tournament-contender-avatar');
+    const av2 = p2El?.querySelector('.tournament-contender-avatar');
+    if (av1 && av2) {
+      if (match.winner.id === match.p1.id) {
+        av1.classList.add('winner-glow'); av2.classList.add('loser-fade');
+      } else {
+        av2.classList.add('winner-glow'); av1.classList.add('loser-fade');
+      }
+    }
+
+    if (p1El) { const nameEl = p1El.querySelector('.tournament-contender-name'); if (nameEl) nameEl.style.color = match.winner.id === match.p1.id ? 'var(--color-accent)' : ''; }
+    if (p2El) { const nameEl = p2El.querySelector('.tournament-contender-name'); if (nameEl) nameEl.style.color = match.winner.id === match.p2.id ? 'var(--color-accent)' : ''; }
+
+    if (prefs.sound) playWinnerFanfare();
+    if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([30, 15, 60]);
+    if (prefs.particles) spawnParticles(getAvatarColorsByName(match.winner.name).color);
+
+    // Botón → siguiente
+    if (spinBtn) {
+      const winName = match.winner.name;
+      spinBtn.textContent = `${winName} avanza →`;
+      setTimeout(() => {
+        const lastRound = rounds[rounds.length-1];
+        if (lastRound[0].winner) {
+          showChampion(lastRound[0].winner);
+        } else {
+          showCurrentMatch();
+        }
+      }, 1400);
+    }
+  }, { signal: ac.signal });
+}
+
+function initAutoView(rounds, ac) {
+  const progressEl = document.getElementById('tournament-auto-progress');
+  const startBtn   = document.getElementById('tournament-auto-start');
+  const roundLbl   = document.getElementById('tournament-round-label');
+
+  if (progressEl) progressEl.innerHTML = '';
+
+  startBtn?.addEventListener('click', async () => {
+    startBtn.style.display = 'none';
+
+    for (let r = 0; r < rounds.length; r++) {
+      if (roundLbl) roundLbl.textContent = roundName(rounds, r);
+
+      for (let m = 0; m < rounds[r].length; m++) {
+        findNextMatch(rounds); // resolve byes
+        const match = rounds[r][m];
+        if (match.winner) continue;
+
+        await new Promise(res => setTimeout(res, 350));
+        match.winner = sortDuel(match.p1, match.p2);
+
+        if (r + 1 < rounds.length) {
+          const nextMatchIdx = Math.floor(m / 2);
+          const slot = m % 2 === 0 ? 'p1' : 'p2';
+          rounds[r + 1][nextMatchIdx][slot] = match.winner;
+        }
+
+        if (prefs.sound) playScanTick();
+        if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate(10);
+
+        // Añadir resultado a la lista
+        if (progressEl && match.p1 && match.p2) {
+          const item = document.createElement('div');
+          item.className = 'auto-result-item';
+          const c = getAvatarColorsByName(match.winner.name);
+          item.style.animationDelay = '0ms';
+          item.innerHTML = `
+            <span class="auto-result-round">${roundName(rounds, r)}</span>
+            <div class="bracket-slot-avatar" style="background:${c.gradient};width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:0.55rem;color:white;flex-shrink:0;">${escapeHtml(getInitials(match.winner.name))}</div>
+            <span class="auto-result-winner">${escapeHtml(match.winner.name)}</span>
+            <span style="color:var(--color-text-dim);font-size:0.7rem;margin-left:auto;">vs</span>
+            <span class="auto-result-loser">${escapeHtml(match.winner.id === match.p1.id ? match.p2.name : match.p1.name)}</span>`;
+          progressEl.appendChild(item);
+          progressEl.scrollTop = progressEl.scrollHeight;
+        }
+      }
+    }
+
+    // Campeón
+    const champion = rounds[rounds.length-1][0].winner;
+    if (champion) {
+      if (prefs.particles) spawnParticles('#FFD700');
+      if (prefs.sound) playWinnerFanfare();
+      await new Promise(res => setTimeout(res, 800));
+      showChampion(champion);
+    }
+  }, { signal: ac.signal, once: true });
+}
+
+function showChampion(player) {
+  const championEl = document.getElementById('tournament-champion');
+  if (!championEl) return;
+
+  // Ocultar vistas
+  ['bracket','rounds','auto'].forEach(v => {
+    const el = document.getElementById(`tournament-${v}-view`);
+    if (el) el.style.display = 'none';
+  });
+
+  const c = getAvatarColorsByName(player.name);
+  const avatarEl = document.getElementById('tournament-champion-avatar');
+  const nameEl   = document.getElementById('tournament-champion-name');
+
+  if (avatarEl) {
+    avatarEl.style.background = c.gradient;
+    avatarEl.textContent      = getInitials(player.name);
+  }
+  if (nameEl) nameEl.textContent = player.name.toUpperCase();
+
+  championEl.style.display = 'flex';
+
+  if (prefs.particles) {
+    spawnParticles('#FFD700');
+    setTimeout(() => spawnParticles(c.color), 300);
+  }
+  if (prefs.flash) triggerImpactFlash();
+  if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([80,40,160,40,320]);
+
+  // Registrar en stats
+  state.recordChosen(player.id);
+  state.recordHistory(player.id, player.name, state.getKey('question'), 'tournament');
+  persistStats();
 }
 
 function escapeHtml(str) {
