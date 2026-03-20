@@ -115,6 +115,7 @@
         <button class="mode-btn"        data-mode="split"       aria-pressed="false">Dividir</button>
         <button class="mode-btn"        data-mode="russian"     aria-pressed="false">Ruleta Rusa</button>
         <button class="mode-btn"        data-mode="tournament"  aria-pressed="false">Torneo</button>
+        <button class="mode-btn"        data-mode="poll"        aria-pressed="false">Encuesta</button>
       </div>
 
       <!-- Sub-opciones contextuales por modo -->
@@ -176,8 +177,25 @@
           </span>
           <span class="mode-desc-text">Divide al grupo en 2 equipos aleatorios al instante.</span>
         </div>
-        <!-- Ruleta Rusa -->
-        <div class="mode-desc-panel" data-for="russian">
+        <!-- Encuesta -->
+        <div class="mode-desc-panel" data-for="poll">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </span>
+          <div style="flex:1;">
+            <div class="tournament-submode-selector">
+              <button class="tournament-sub-btn active" data-poll-sub="yesno">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                Sí / No
+              </button>
+              <button class="tournament-sub-btn" data-poll-sub="options">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor"/><circle cx="3" cy="12" r="1.5" fill="currentColor"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/></svg>
+                Opciones
+              </button>
+            </div>
+            <div class="tournament-sub-desc" id="poll-sub-desc">Cada participante vota Sí o No. Se revela el resultado con barras animadas.</div>
+          </div>
+        </div>
           <span class="mode-desc-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="2" fill="var(--color-impact)" stroke="var(--color-impact)"/></svg>
           </span>
@@ -288,19 +306,25 @@
         </svg>
       </button>
       <h2 class="screen-title">Stats <span>de Sesión</span></h2>
-      <!-- Tab: Stats / Historial -->
-      <div class="stats-tabs">
-        <button class="stats-tab active" id="tab-stats" data-tab="stats">Stats</button>
-        <button class="stats-tab" id="tab-history" data-tab="history">Historial</button>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <!-- Tab: Stats / Historial -->
+        <div class="stats-tabs">
+          <button class="stats-tab active" id="tab-stats" data-tab="stats">Stats</button>
+          <button class="stats-tab" id="tab-history" data-tab="history">Historial</button>
+        </div>
+        <!-- Reset stats -->
+        <button class="btn btn-icon" id="btn-reset-stats" aria-label="Resetear estadísticas" title="Resetear" style="color:var(--color-text-dim);flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.4"/></svg>
+        </button>
       </div>
     </header>
 
     <!-- Panel Stats -->
-    <div class="stats-grid" id="stats-grid" role="list" aria-label="Estadísticas por participante" style="display:flex;flex-direction:column;">
+    <div class="stats-grid" id="stats-grid" role="list" aria-label="Estadísticas por participante" style="display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:1;">
     </div>
 
     <!-- Panel Historial -->
-    <div class="history-list" id="history-list" role="list" aria-label="Historial de sorteos" style="display:none;">
+    <div class="history-list" id="history-list" role="list" aria-label="Historial de sorteos" style="display:none;overflow-y:auto;flex:1;">
     </div>
 
   </section>
@@ -418,6 +442,50 @@
       <div class="tournament-champion-name" id="tournament-champion-name"></div>
       <div class="tournament-champion-label">CAMPEÓN DEL TORNEO</div>
       <button class="btn btn-accent" id="tournament-close-champion" style="margin-top:16px;width:100%;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay de Encuesta -->
+<div id="poll-overlay" role="dialog" aria-modal="true" aria-label="Encuesta" style="display:none;">
+  <div class="poll-inner">
+    <div class="tournament-header">
+      <div class="tournament-title" id="poll-title">ENCUESTA</div>
+      <button class="btn btn-icon tournament-exit-btn" id="poll-exit" aria-label="Cerrar encuesta">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Pregunta -->
+    <div class="poll-question-wrap">
+      <div class="poll-question-label">Pregunta</div>
+      <div class="poll-question-text" id="poll-question-text"></div>
+    </div>
+
+    <!-- Opciones (solo modo opciones) -->
+    <div id="poll-options-setup" style="display:none;">
+      <div class="poll-options-list" id="poll-options-list"></div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="poll-option-input" class="input-text" placeholder="Añadir opción..." maxlength="30" style="flex:1;font-size:0.85rem;padding:10px 14px;">
+        <button class="btn btn-accent" id="poll-add-option" style="padding:10px 16px;">+</button>
+      </div>
+      <button class="btn btn-primary" id="poll-start-voting" style="width:100%;margin-top:8px;">Iniciar votación</button>
+    </div>
+
+    <!-- Votación -->
+    <div id="poll-voting-area" style="display:none;">
+      <div class="poll-avatars-grid" id="poll-avatars-grid"></div>
+      <button class="btn btn-impact" id="poll-reveal-btn" style="width:100%;font-size:1rem;padding:14px;">
+        Revelar resultados
+      </button>
+    </div>
+
+    <!-- Resultados -->
+    <div id="poll-results" style="display:none;">
+      <div class="poll-results-bars" id="poll-results-bars"></div>
+      <div class="poll-winner-label" id="poll-winner-label"></div>
+      <button class="btn btn-accent" id="poll-restart" style="width:100%;margin-top:12px;">Votar de nuevo</button>
+      <button class="btn btn-icon" id="poll-close-results" style="width:100%;margin-top:6px;padding:10px;">Cerrar</button>
     </div>
   </div>
 </div>

@@ -14,7 +14,9 @@ import { getAvatarColors, getAvatarColorsByName, getInitials, addParticipant,
 import { selectOne, selectMultiple, selectOrder,
          buildAnimationSequence }                    from './selector.js';
 import { playWinnerFanfare, playScanTick,
-         playBuildUp, playAddParticipant, playError } from './audio.js';
+         playBuildUp, playAddParticipant, playError,
+         playDrumRoll, playBoxingBell, playChampionFanfare,
+         playVoteTick, playRevealGliss } from './audio.js';
 import { saveGroup, loadAllGroups, loadGroup,
          deleteGroup, savePreferences, loadPreferences } from './storage.js';
 import { Icons, luckIcon }                           from './icons.js';
@@ -171,6 +173,19 @@ export function initUI() {
   $('btn-help')?.addEventListener('click', () => {
     const m = $('modal-help');
     if (m) m.style.display = m.style.display === 'none' ? 'flex' : 'none';
+  });
+
+  // Sub-modos de la encuesta
+  document.querySelectorAll('[data-poll-sub]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-poll-sub]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _pollSubMode = btn.dataset.pollSub;
+      const desc = document.getElementById('poll-sub-desc');
+      if (desc) desc.textContent = btn.dataset.pollSub === 'yesno'
+        ? 'Cada participante vota Sí o No. Se revela el resultado con barras animadas.'
+        : 'Escribe 2-4 opciones, asigna a cada participante y revela el ganador.';
+    });
   });
 
   // Sub-modos del torneo
@@ -965,6 +980,12 @@ async function handleSortear() {
     return;
   }
 
+  // ── MODO ENCUESTA — flujo propio ──
+  if (mode === 'poll') {
+    launchPoll(active);
+    return;
+  }
+
   // ── MODO DIVIDIR — resultado inmediato, sin barrido ──
   if (mode === 'split') {
     handleSplitMode(active);
@@ -1430,7 +1451,9 @@ function handleResultNext() {
         showToast('¡Todos eliminados!');
         state.set({ eliminatedIds: [] });
       }
-    } else if (mode === 'russian') {
+    } else if (mode === 'poll') {
+    label = _pollSubMode === 'yesno' ? 'VOTAR SÍ/NO' : 'ENCUESTA';
+  } else if (mode === 'russian') {
       const survivors = state.getKey('russianSurvivors') || [];
       if (survivors.length >= 2) {
         handleSortear();
@@ -1603,6 +1626,9 @@ function closeResult() {
   if (mode === 'elimination') state.set({ eliminatedIds: [] });
   if (mode === 'russian')   state.set({ russianSurvivors: [] });
   if (mode === 'duel')      state.set({ duelIds: [] });
+  // Close poll overlay if open
+  const pollOv = document.getElementById('poll-overlay');
+  if (pollOv) pollOv.style.display = 'none';
 
   if (btnResultAgain) btnResultAgain.textContent = 'Otra vez';
   state.set({ phase: 'idle', winnerId: null });
@@ -2152,6 +2178,8 @@ function updateSortButton() {
     label = duelIds.length < 2 ? `ELIGE ${2 - duelIds.length} MÁS` : 'DUELO';
   } else if (mode === 'split') {
     label = 'DIVIDIR';
+  } else if (mode === 'poll') {
+    label = _pollSubMode === 'yesno' ? 'VOTAR SÍ/NO' : 'ENCUESTA';
   } else if (mode === 'russian') {
     const survivors = state.getKey('russianSurvivors') || [];
     if (survivors.length > 0) {
@@ -2824,7 +2852,7 @@ function renderHistory() {
   const modeLabels = {
     normal: 'Normal', elimination: 'Elim.', team: 'Equipo', order: 'Orden',
     revenge: 'Venganza', duel: 'Duelo', split: 'Dividir', russian: 'R. Rusa',
-    tournament: 'Torneo'
+    tournament: 'Torneo', poll: 'Encuesta'
   };
 
   historyList.innerHTML = history.map((entry, i) => {
@@ -3100,15 +3128,19 @@ function runRouletteAnimation(participants, winnerId) {
       if (!startTime) startTime = timestamp;
       const elapsed  = timestamp - startTime;
       const progress = Math.min(elapsed / DURATION, 1);
-      const speed    = 1 - progress; // 1=rápido, 0=parado
+      const speed    = 1 - progress;
       const eased    = easeOut(progress);
       const currentAngle = finalAngle * eased;
 
       drawWheel(currentAngle);
 
-      // ── Tick sonido: detectar cuándo el puntero cruza un separador ──
-      const pointed    = ((-Math.PI/2 - currentAngle) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
-      const currentIdx = Math.floor(pointed / sliceAngle) % N;
+      // ── Sector apuntado por el puntero (arriba = -π/2) ──
+      // El sector i ocupa [currentAngle + i*sliceAngle, currentAngle + (i+1)*sliceAngle]
+      // El puntero está en -π/2. ¿Qué i satisface currentAngle + i*sliceAngle <= -π/2 < currentAngle + (i+1)*sliceAngle?
+      // → i = floor((-π/2 - currentAngle) / sliceAngle) mod N
+      const rawIdx     = Math.floor(((-Math.PI/2) - currentAngle) / sliceAngle);
+      const currentIdx = ((rawIdx % N) + N) % N;
+
       if (currentIdx !== lastTickIdx) {
         lastTickIdx = currentIdx;
         if (prefs.vibration && 'vibrate' in navigator) {
@@ -3653,7 +3685,7 @@ function launchRussianRoulette(participants) {
           dots[currentChamber].classList.add('fired');
         }
 
-        if (prefs.sound) playScanTick();
+        if (prefs.sound) { if (i === rounds[r].length - 1) playBoxingBell(); else playScanTick(); }
         if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate(15);
 
         currentChamber++;
@@ -3953,6 +3985,19 @@ function initRoundsView(rounds, ac, participants) {
     const match = rounds[currentRoundIdx][currentMatchIdx];
     if (match.winner) return;
 
+    spinBtn.disabled = true;
+    spinBtn.style.opacity = '0.5';
+    if (prefs.sound) playDrumRoll(1.1);
+
+    // Animar tensión — VS badge pulsa más rápido
+    const vsBadge = document.querySelector('.tournament-vs-badge');
+    if (vsBadge) { vsBadge.style.animation = 'voicePulse 0.25s ease-in-out infinite'; }
+
+    setTimeout(() => {
+      spinBtn.disabled = false;
+      spinBtn.style.opacity = '';
+      if (vsBadge) vsBadge.style.animation = '';
+
     match.winner = sortDuel(match.p1, match.p2);
 
     // Propagate
@@ -3976,23 +4021,23 @@ function initRoundsView(rounds, ac, participants) {
     if (p1El) { const nameEl = p1El.querySelector('.tournament-contender-name'); if (nameEl) nameEl.style.color = match.winner.id === match.p1.id ? 'var(--color-accent)' : ''; }
     if (p2El) { const nameEl = p2El.querySelector('.tournament-contender-name'); if (nameEl) nameEl.style.color = match.winner.id === match.p2.id ? 'var(--color-accent)' : ''; }
 
-    if (prefs.sound) playWinnerFanfare();
-    if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([30, 15, 60]);
-    if (prefs.particles) spawnParticles(getAvatarColorsByName(match.winner.name).color);
+      if (prefs.sound) playBoxingBell();
+      if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([30, 15, 80]);
+      if (prefs.particles) spawnParticles(getAvatarColorsByName(match.winner.name).color);
 
-    // Botón → siguiente
-    if (spinBtn) {
-      const winName = match.winner.name;
-      spinBtn.textContent = `${winName} avanza →`;
-      setTimeout(() => {
-        const lastRound = rounds[rounds.length-1];
-        if (lastRound[0].winner) {
-          showChampion(lastRound[0].winner);
-        } else {
-          showCurrentMatch();
-        }
-      }, 1400);
-    }
+      if (spinBtn) {
+        const winName = match.winner.name;
+        spinBtn.textContent = `${winName} avanza →`;
+        setTimeout(() => {
+          const lastRound = rounds[rounds.length-1];
+          if (lastRound[0].winner) {
+            showChampion(lastRound[0].winner);
+          } else {
+            showCurrentMatch();
+          }
+        }, 1500);
+      }
+    }, 1150); // fin setTimeout drum roll
   }, { signal: ac.signal });
 }
 
@@ -4023,7 +4068,7 @@ function initAutoView(rounds, ac) {
           rounds[r + 1][nextMatchIdx][slot] = match.winner;
         }
 
-        if (prefs.sound) playScanTick();
+        if (prefs.sound) { if (i === rounds[r].length - 1) playBoxingBell(); else playScanTick(); }
         if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate(10);
 
         // Añadir resultado a la lista
@@ -4078,16 +4123,301 @@ function showChampion(player) {
   championEl.style.display = 'flex';
 
   if (prefs.particles) {
-    spawnParticles('#FFD700');
-    setTimeout(() => spawnParticles(c.color), 300);
+    spawnParticles(c.color);
+    setTimeout(() => spawnParticles('#FF0020'), 400);
   }
   if (prefs.flash) triggerImpactFlash();
-  if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([80,40,160,40,320]);
+  if (prefs.sound) { playDrumRoll(0.6); setTimeout(() => playBoxingBell(), 700); }
+  if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([80,40,160,40,320,40,200]);
 
   // Registrar en stats
   state.recordChosen(player.id);
   state.recordHistory(player.id, player.name, state.getKey('question'), 'tournament');
   persistStats();
+}
+
+// ══════════════════════════════════════════════════════════
+// MODO ENCUESTA — Sí/No y Opciones personalizadas
+// ══════════════════════════════════════════════════════════
+
+let _pollSubMode = 'yesno'; // 'yesno' | 'options'
+const POLL_OPTION_COLORS = [
+  'hsl(120,80%,50%)', 'hsl(200,80%,55%)', 'hsl(40,90%,55%)', 'hsl(300,80%,60%)'
+];
+
+function launchPoll(participants) {
+  const overlay = document.getElementById('poll-overlay');
+  if (!overlay) return;
+
+  const question = state.getKey('question') || '¿Quién paga?';
+  const ac = new AbortController();
+
+  // Reset overlay
+  overlay.style.display = 'flex';
+  state.set({ phase: 'spinning' });
+
+  document.getElementById('poll-question-text').textContent = question;
+  document.getElementById('poll-title').textContent = _pollSubMode === 'yesno' ? 'SÍ / NO' : 'ENCUESTA';
+
+  // Ocultar todas las secciones
+  ['poll-options-setup','poll-voting-area','poll-results'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+
+  // Exit
+  document.getElementById('poll-exit')?.addEventListener('click', () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    state.set({ phase: 'idle', winnerId: null });
+    updateSortButton();
+  }, { signal: ac.signal });
+
+  if (_pollSubMode === 'yesno') {
+    startYesNoPoll(participants, ac, overlay);
+  } else {
+    startOptionsPoll(participants, ac, overlay);
+  }
+}
+
+function startYesNoPoll(participants, ac, overlay) {
+  const votingArea = document.getElementById('poll-voting-area');
+  const grid       = document.getElementById('poll-avatars-grid');
+  const revealBtn  = document.getElementById('poll-reveal-btn');
+
+  if (!votingArea || !grid || !revealBtn) return;
+  votingArea.style.display = 'flex';
+
+  // Estado de votos: null | 'yes' | 'no'
+  const votes = {};
+
+  // Renderizar avatares
+  grid.innerHTML = participants.map(p => {
+    const c = getAvatarColorsByName(p.name);
+    return `
+      <div class="poll-avatar-card" data-pid="${p.id}" data-vote-state="none">
+        <div class="poll-avatar-mini" style="background:${c.gradient};">${escapeHtml(getInitials(p.name))}</div>
+        <div class="poll-avatar-name">${escapeHtml(p.name)}</div>
+        <div class="poll-avatar-vote" id="pv-${p.id}"></div>
+      </div>`;
+  }).join('');
+
+  // Tap en avatar — cicla: none → sí → no → none
+  grid.querySelectorAll('.poll-avatar-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const pid   = card.dataset.pid;
+      const state_v = card.dataset.voteState || 'none';
+      const next  = state_v === 'none' ? 'yes' : state_v === 'yes' ? 'no' : 'none';
+
+      card.dataset.voteState = next;
+      votes[pid] = next === 'none' ? null : next;
+
+      card.classList.remove('voted-yes','voted-no');
+      const voteEl = document.getElementById(`pv-${pid}`);
+
+      if (next === 'yes') {
+        card.classList.add('voted-yes');
+        if (voteEl) voteEl.textContent = 'SÍ';
+        if (prefs.sound) playVoteTick(true);
+        if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate(8);
+      } else if (next === 'no') {
+        card.classList.add('voted-no');
+        if (voteEl) voteEl.textContent = 'NO';
+        if (prefs.sound) playVoteTick(false);
+        if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([6,4,6]);
+      } else {
+        if (voteEl) voteEl.textContent = '';
+      }
+    }, { signal: ac.signal });
+  });
+
+  // Revelar
+  revealBtn?.addEventListener('click', () => {
+    const yesVoters = participants.filter(p => votes[p.id] === 'yes');
+    const noVoters  = participants.filter(p => votes[p.id] === 'no');
+    const abst      = participants.filter(p => !votes[p.id]);
+
+    showPollResults([
+      { label: 'SÍ',        count: yesVoters.length, voters: yesVoters, color: '#00DD88' },
+      { label: 'NO',        count: noVoters.length,  voters: noVoters,  color: 'var(--color-impact)' },
+      { label: 'Abstención',count: abst.length,      voters: abst,      color: 'rgba(255,255,255,0.2)' },
+    ], participants.length, ac, overlay);
+  }, { signal: ac.signal });
+}
+
+function startOptionsPoll(participants, ac, overlay) {
+  const setupEl  = document.getElementById('poll-options-setup');
+  const listEl   = document.getElementById('poll-options-list');
+  const inputEl  = document.getElementById('poll-option-input');
+  const addBtn   = document.getElementById('poll-add-option');
+  const startBtn = document.getElementById('poll-start-voting');
+
+  if (!setupEl || !listEl) return;
+  setupEl.style.display = 'flex';
+  if (listEl) listEl.innerHTML = '';
+
+  const options = [];
+
+  function renderOptionsList() {
+    listEl.innerHTML = options.map((opt, i) => `
+      <div class="poll-option-item">
+        <div class="poll-option-color" style="background:${POLL_OPTION_COLORS[i % 4]};"></div>
+        <span>${escapeHtml(opt)}</span>
+        <button class="poll-option-del" data-idx="${i}" aria-label="Eliminar opción">×</button>
+      </div>`).join('');
+
+    listEl.querySelectorAll('.poll-option-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        options.splice(parseInt(btn.dataset.idx), 1);
+        renderOptionsList();
+      });
+    });
+
+    if (startBtn) startBtn.disabled = options.length < 2;
+  }
+
+  function addOption() {
+    const val = inputEl?.value?.trim();
+    if (!val || options.length >= 4) return;
+    if (options.includes(val)) return;
+    options.push(val);
+    if (inputEl) inputEl.value = '';
+    renderOptionsList();
+  }
+
+  addBtn?.addEventListener('click', addOption, { signal: ac.signal });
+  inputEl?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addOption(); } }, { signal: ac.signal });
+
+  renderOptionsList();
+
+  startBtn?.addEventListener('click', () => {
+    if (options.length < 2) return;
+    setupEl.style.display = 'none';
+
+    const votingArea = document.getElementById('poll-voting-area');
+    const grid       = document.getElementById('poll-avatars-grid');
+    const revealBtn  = document.getElementById('poll-reveal-btn');
+
+    if (!votingArea || !grid) return;
+    votingArea.style.display = 'flex';
+
+    const votes = {};
+
+    grid.innerHTML = participants.map(p => {
+      const c = getAvatarColorsByName(p.name);
+      return `
+        <div class="poll-avatar-card" data-pid="${p.id}" data-opt-idx="-1">
+          <div class="poll-avatar-mini" style="background:${c.gradient};">${escapeHtml(getInitials(p.name))}</div>
+          <div class="poll-avatar-name">${escapeHtml(p.name)}</div>
+          <div class="poll-avatar-vote" id="pv-${p.id}"></div>
+        </div>`;
+    }).join('');
+
+    grid.querySelectorAll('.poll-avatar-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const pid  = card.dataset.pid;
+        const curr = parseInt(card.dataset.optIdx ?? '-1');
+        const next = (curr + 1) % options.length;
+
+        card.dataset.optIdx = next;
+        votes[pid] = next;
+
+        card.className = `poll-avatar-card voted-opt-${next}`;
+        const voteEl = document.getElementById(`pv-${pid}`);
+        if (voteEl) voteEl.textContent = options[next];
+        if (prefs.sound) playVoteTick(true);
+        if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate(8);
+      }, { signal: ac.signal });
+    });
+
+    revealBtn?.addEventListener('click', () => {
+      const results = options.map((label, i) => ({
+        label,
+        count:  participants.filter(p => votes[p.id] === i).length,
+        voters: participants.filter(p => votes[p.id] === i),
+        color:  POLL_OPTION_COLORS[i % 4],
+      }));
+      const abstVoters = participants.filter(p => votes[p.id] === undefined);
+      if (abstVoters.length) results.push({ label: 'Sin votar', count: abstVoters.length, voters: abstVoters, color: 'rgba(255,255,255,0.2)' });
+
+      showPollResults(results, participants.length, ac, overlay);
+    }, { signal: ac.signal });
+  }, { signal: ac.signal });
+}
+
+function showPollResults(results, total, ac, overlay) {
+  const votingArea = document.getElementById('poll-voting-area');
+  const resultsEl  = document.getElementById('poll-results');
+  const barsEl     = document.getElementById('poll-results-bars');
+  const winnerLbl  = document.getElementById('poll-winner-label');
+
+  if (!resultsEl || !barsEl) return;
+  if (votingArea) votingArea.style.display = 'none';
+  resultsEl.style.display = 'flex';
+
+  if (prefs.sound) playRevealGliss();
+  if (prefs.vibration && 'vibrate' in navigator) navigator.vibrate([20,10,40,10,80]);
+
+  // Ordenar por votos desc (excluir abstención para winner)
+  const ranked = [...results].filter(r => r.label !== 'Sin votar' && r.label !== 'Abstención')
+    .sort((a,b) => b.count - a.count);
+  const winner = ranked[0];
+  const isTie  = ranked.length >= 2 && ranked[0].count === ranked[1].count && ranked[0].count > 0;
+
+  barsEl.innerHTML = results.map((r, i) => {
+    const pct      = total > 0 ? Math.round(r.count / total * 100) : 0;
+    const voterStr = r.voters.map(p => p.name).join(', ');
+    return `
+      <div class="poll-result-row" style="animation-delay:${i * 100}ms">
+        <div class="poll-result-header">
+          <span class="poll-result-label">${escapeHtml(r.label)}</span>
+          <span class="poll-result-count">${r.count} voto${r.count !== 1 ? 's' : ''} · ${pct}%</span>
+        </div>
+        <div class="poll-result-bar-track">
+          <div class="poll-result-bar-fill" id="bar-${i}"
+               style="background:${r.color};"></div>
+        </div>
+        ${voterStr ? `<div class="poll-result-names">${escapeHtml(voterStr)}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  // Animar barras después de un frame
+  requestAnimationFrame(() => {
+    results.forEach((r, i) => {
+      const pct = total > 0 ? r.count / total : 0;
+      const bar = document.getElementById(`bar-${i}`);
+      if (bar) {
+        setTimeout(() => { bar.style.transform = `scaleX(${pct})`; }, i * 100 + 50);
+      }
+    });
+  });
+
+  // Ganador
+  if (winnerLbl) {
+    if (winner && winner.count > 0 && !isTie) {
+      winnerLbl.textContent = `Gana: ${winner.label}`;
+      if (prefs.particles) spawnParticles(winner.color.startsWith('hsl') ? winner.color : '#00DD88');
+    } else if (isTie) {
+      winnerLbl.textContent = '¡Empate!';
+    } else {
+      winnerLbl.textContent = 'Sin votos';
+    }
+  }
+
+  // Reiniciar / cerrar
+  document.getElementById('poll-restart')?.addEventListener('click', () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    state.set({ phase: 'idle', winnerId: null });
+    updateSortButton();
+    setTimeout(() => launchPoll(state.getActiveParticipants()), 200);
+  }, { signal: ac.signal, once: true });
+
+  document.getElementById('poll-close-results')?.addEventListener('click', () => {
+    ac.abort();
+    overlay.style.display = 'none';
+    state.set({ phase: 'idle', winnerId: null });
+    updateSortButton();
+  }, { signal: ac.signal, once: true });
 }
 
 function escapeHtml(str) {

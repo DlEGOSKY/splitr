@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arcade Mini Games: Luxury Edition</title>
+    
+    <!-- Google Fonts: Orbitron para títulos, Inter para UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CORE STYLES --- */
+        :root {
+            --bg-dark: #050505;
+            --primary: #3b82f6;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --gold: #fbbf24;
+            --text-main: #e2e8f0;
+            --card-surface: rgba(30, 41, 59, 0.9);
+            --font-display: 'Orbitron', sans-serif;
+            --font-ui: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- CRT & VIGNETTE EFFECTS --- */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: 0 0 150px rgba(0,0,0,0.9) inset;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- LAYERS --- */
+        #game-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            z-index: 0;
+            width: 100%; height: 100%;
+            transition: filter 0.5s ease;
+        }
+
+        #ui-layer {
+            position: absolute;
+            z-index: 10;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- SCREENS --- */
+        .screen {
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%; height: 100%;
+            background: transparent;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .screen.hidden {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px 45px;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            border-radius: 4px; /* Más cuadrado para look tech */
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            margin: 10px;
+            text-transform: uppercase;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn:hover { 
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+            background: #60a5fa;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: none;
+            color: #94a3b8;
+        }
+        .btn-secondary:hover { border-color: white; color: white; }
+
+        /* --- GAME UI: HUD --- */
+        #game-ui-overlay {
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .hud-top {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .score-box {
+            text-align: left;
+        }
+        
+        .score-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--text-main);
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .streak-badge {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            color: var(--gold);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+        .streak-badge.active { opacity: 1; transform: translateY(0); }
+
+        /* --- GAME UI: CARD --- */
+        .card-stage {
+            position: relative;
+            width: 220px;
+            height: 340px; /* Aspecto carta aproximado */
+            perspective: 1000px;
+            margin-bottom: 40px;
+        }
+
+        .playing-card {
+            width: 100%; height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Efecto Holográfico (Foil) para figuras */
+        .holo-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(255,255,255,0) 30%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 70%);
+            background-size: 200% 200%;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            mix-blend-mode: overlay;
+        }
+        
+        .playing-card.holo .holo-overlay {
+            opacity: 1;
+            animation: shimmer 2s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* --- GAME UI: CONTROLS --- */
+        .controls-container {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .btn-decision {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-decision:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        .btn-lower:hover { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 30px rgba(244, 63, 94, 0.4); }
+        .btn-higher:hover { border-color: var(--success); color: var(--success); box-shadow: 0 0 30px rgba(16, 185, 129, 0.4); }
+
+        /* --- HISTORY BAR --- */
+        .history-bar {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 10px;
+            opacity: 0.7;
+        }
+        .history-card {
+            width: 40px; height: 56px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background-size: cover;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .history-card:last-child { opacity: 1; transform: scale(1.1); border-color: var(--primary); }
+
+        /* --- FEEDBACK POPUPS --- */
+        .popup-score {
+            position: absolute;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 2.5rem;
+            color: var(--gold);
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(0.5); }
+            50% { transform: translateY(-30px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+        }
+
+        /* --- LOADER --- */
+        .loader {
+            width: 48px; height: 48px;
+            border: 3px solid #FFF;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        .loader::after {
+            content: '';  
+            box-sizing: border-box;
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-bottom-color: var(--primary);
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="vignette"></div>
+    <canvas id="game-canvas"></canvas>
+
+    <div id="ui-layer">
+        
+        <!-- WELCOME SCREEN -->
+        <section id="screen-welcome" class="screen">
+            <h1>Arcade<br><span style="font-size:1.5rem; letter-spacing:10px; color:var(--primary)">Luxury</span></h1>
+            <button id="btn-start" class="btn">Conectar Sistema</button>
+            <p style="margin-top: 30px; font-family: monospace; color: #64748b;">INIT_CORE_MODULES...</p>
+        </section>
+
+        <!-- MENU SCREEN -->
+        <section id="screen-menu" class="screen hidden">
+            <h2>Seleccionar Protocolo</h2>
+            <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn" style="min-width: 250px; height: 250px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:15px;" data-game="higher-lower">
+                    <span style="font-size: 3rem;">🃏</span>
+                    <span>High / Low</span>
+                    <span style="font-size:0.7rem; opacity:0.6; font-family:monospace;">Risk Multiplier: ON</span>
+                </button>
+                <!-- Placeholders -->
+                <button class="btn btn-secondary" style="width:120px; height:120px; opacity:0.5; cursor:not-allowed;">🔒<br><span style="font-size:0.7rem">Trivia</span></button>
+                <button class="btn btn-secondary" style="width:120px; height:120px; opacity:0.5; cursor:not-allowed;">🔒<br><span style="font-size:0.7rem">Animals</span></button>
+            </div>
+        </section>
+
+        <!-- GAME CONTAINER -->
+        <section id="screen-game" class="screen hidden">
+            <div id="game-ui-overlay">
+                <!-- Injected via JS -->
+            </div>
+            <div class="hud-top">
+                <div class="score-box">
+                    <div class="score-label">Score</div>
+                    <div class="score-value" id="ui-score">0</div>
+                </div>
+                <div class="score-box" style="text-align:right">
+                    <div class="streak-badge" id="ui-streak">🔥 x1</div>
+                    <button id="btn-quit" class="btn-secondary" style="padding: 5px 15px; font-size: 0.8rem; margin-top:5px;">ABORT</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION & STATE
+        // ==========================================
+        const CONFIG = {
+            STATES: { WELCOME: 'welcome', MENU: 'menu', GAME: 'game' },
+            API: { DECK: 'https://deckofcardsapi.com/api/deck' },
+            COLORS: {
+                DEFAULT: '#0f172a', // Azul oscuro
+                STREAK_3: '#1e3a8a', // Azul intenso
+                STREAK_6: '#581c87', // Púrpura
+                STREAK_9: '#7f1d1d'  // Rojo infierno
+            }
+        };
+
+        // ==========================================
+        // AUDIO SYSTEM (Synthesizer - No Assets)
+        // ==========================================
+        class AudioSynth {
+            constructor() {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.gain.value = 0.3; // Volumen global bajo
+                this.masterGain.connect(this.ctx.destination);
+            }
+
+            playTone(freq, type = 'sine', duration = 0.1) {
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                
+                gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(this.masterGain);
+                
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
+            }
+
+            playWin(streak) {
+                // Tono progresivo: más agudo según la racha
+                const baseFreq = 400 + (streak * 50);
+                // Acorde mayor arpegiado rápido
+                this.playTone(baseFreq, 'triangle', 0.2);
+                setTimeout(() => this.playTone(baseFreq * 1.25, 'sine', 0.2), 50); // Tercera mayor
+                setTimeout(() => this.playTone(baseFreq * 1.5, 'sine', 0.4), 100); // Quinta justa
+            }
+
+            playLose() {
+                this.playTone(150, 'sawtooth', 0.4);
+                setTimeout(() => this.playTone(100, 'sawtooth', 0.4), 100);
+            }
+
+            playClick() {
+                this.playTone(800, 'square', 0.05);
+            }
+        }
+
+        // ==========================================
+        // VISUAL SYSTEM (Canvas & Particles)
+        // ==========================================
+        class CanvasManager {
+            constructor() {
+                this.canvas = document.getElementById('game-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+                
+                this.particles = [];
+                this.bgColor = CONFIG.COLORS.DEFAULT;
+                this.targetBgColor = CONFIG.COLORS.DEFAULT;
+                
+                this.loop();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            setMood(streak) {
+                if(streak >= 9) this.targetBgColor = CONFIG.COLORS.STREAK_9;
+                else if(streak >= 6) this.targetBgColor = CONFIG.COLORS.STREAK_6;
+                else if(streak >= 3) this.targetBgColor = CONFIG.COLORS.STREAK_3;
+                else this.targetBgColor = CONFIG.COLORS.DEFAULT;
+            }
+
+            // Interpolar color (Lerp)
+            lerpColor(a, b, t) {
+                const ah = parseInt(a.replace('#', ''), 16),
+                      ar = ah >> 16, ag = ah >> 8 & 0xff, ab = ah & 0xff,
+                      bh = parseInt(b.replace('#', ''), 16),
+                      br = bh >> 16, bg = bh >> 8 & 0xff, bb = bh & 0xff,
+                      rr = ar + t * (br - ar),
+                      rg = ag + t * (bg - ag),
+                      rb = ab + t * (bb - ab);
+                return '#' + ((1 << 24) + (Math.round(rr) << 16) + (Math.round(rg) << 8) + Math.round(rb)).toString(16).slice(1);
+            }
+
+            explode(x, y, color) {
+                for(let i=0; i<30; i++) {
+                    this.particles.push({
+                        x: x || this.canvas.width/2,
+                        y: y || this.canvas.height/2,
+                        vx: (Math.random() - 0.5) * 15,
+                        vy: (Math.random() - 0.5) * 15,
+                        life: 1.0,
+                        color: color,
+                        size: Math.random() * 4 + 2
+                    });
+                }
+            }
+
+            loop() {
+                // Smooth background transition
+                this.bgColor = this.lerpColor(this.bgColor, this.targetBgColor, 0.05);
+                
+                this.ctx.fillStyle = this.bgColor;
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Grid effect (Tron style floor)
+                this.ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+                this.ctx.lineWidth = 1;
+                // Perspective grid simulation could be complex, keeping it simple vertical lines moving
+                
+                // Particles
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    let p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.2; // Gravity
+                    p.life -= 0.02;
+
+                    this.ctx.globalAlpha = p.life;
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                    this.ctx.fill();
+
+                    if (p.life <= 0) this.particles.splice(i, 1);
+                }
+                this.ctx.globalAlpha = 1;
+
+                requestAnimationFrame(() => this.loop());
+            }
+        }
+
+        // ==========================================
+        // GAME LOGIC: Higher / Lower
+        // ==========================================
+        class HigherLowerGame {
+            constructor(canvas, audio, onQuit) {
+                this.canvas = canvas;
+                this.audio = audio;
+                this.onQuit = onQuit;
+                
+                this.deckId = null;
+                this.currentCard = null;
+                this.score = 0;
+                this.displayScore = 0; // Para el efecto rolling
+                this.streak = 0;
+                this.history = []; // Array de imágenes de cartas previas
+                
+                this.uiContainer = document.getElementById('game-ui-overlay');
+                this.scoreEl = document.getElementById('ui-score');
+                this.streakEl = document.getElementById('ui-streak');
+            }
+
+            async init() {
+                this.uiContainer.innerHTML = '<div class="loader"></div>';
+                try {
+                    // API Call
+                    const res = await fetch(`${CONFIG.API.DECK}/new/shuffle/?deck_count=1`);
+                    const data = await res.json();
+                    this.deckId = data.deck_id;
+                    await this.drawFirstCard();
+                } catch(e) {
+                    this.uiContainer.innerHTML = '<p>Connection Error. Retry?</p>';
+                }
+            }
+
+            async drawFirstCard() {
+                const card = await this.fetchCard();
+                this.currentCard = card;
+                this.score = 0;
+                this.displayScore = 0;
+                this.streak = 0;
+                this.history = [];
+                this.updateHUD();
+                this.renderTable();
+            }
+
+            async fetchCard() {
+                let res = await fetch(`${CONFIG.API.DECK}/${this.deckId}/draw/?count=1`);
+                let data = await res.json();
+                
+                // Auto Shuffle si se acaban
+                if (data.remaining < 2) {
+                    await fetch(`${CONFIG.API.DECK}/${this.deckId}/shuffle/`);
+                }
+                
+                return data.cards[0];
+            }
+
+            getCardValue(card) {
+                const val = card.value;
+                if (val === "ACE") return 14;
+                if (val === "KING") return 13;
+                if (val === "QUEEN") return 12;
+                if (val === "JACK") return 11;
+                return parseInt(val) || 0;
+            }
+
+            // RISK CALCULATOR
+            calculatePoints(currentVal, guess) {
+                // As (14) -> Menor es muy probable (bajo riesgo)
+                // 2 -> Mayor es muy probable (bajo riesgo)
+                let probability = 0.5;
+                if (guess === 'HIGHER') {
+                    // Cartas que ganan: (14 - current) de 13 posibles (approx)
+                    probability = (14 - currentVal) / 13;
+                } else {
+                    // Cartas que ganan: (current - 2) de 13 posibles
+                    probability = (currentVal - 2) / 13;
+                }
+                
+                // Clamp probability
+                probability = Math.max(0.1, Math.min(0.9, probability));
+                
+                // Puntos base inversos a la probabilidad
+                // Prob 0.1 (Muy dificil) -> 100 pts
+                // Prob 0.9 (Muy facil) -> 10 pts
+                const basePoints = Math.floor((1 / probability) * 10);
+                return basePoints;
+            }
+
+            renderTable() {
+                const isHolo = ['KING','QUEEN','JACK','ACE'].includes(this.currentCard.value);
+                
+                this.uiContainer.innerHTML = `
+                    <div class="card-stage">
+                        <div class="holo-overlay"></div>
+                        <img src="${this.currentCard.image}" class="playing-card ${isHolo ? 'holo' : ''}" id="main-card">
+                    </div>
+                    
+                    <div class="controls-container">
+                        <div class="btn-decision btn-lower" id="btn-low">▼</div>
+                        <div class="btn-decision btn-higher" id="btn-high">▲</div>
+                    </div>
+
+                    <div class="history-bar" id="history-row">
+                        ${this.history.map(img => `<div class="history-card" style="background-image:url(${img})"></div>`).join('')}
+                    </div>
+                `;
+
+                document.getElementById('btn-low').onclick = () => this.makeMove('LOWER');
+                document.getElementById('btn-high').onclick = () => this.makeMove('HIGHER');
+            }
+
+            async makeMove(guess) {
+                // Bloquear UI
+                document.getElementById('btn-low').style.pointerEvents = 'none';
+                document.getElementById('btn-high').style.pointerEvents = 'none';
+                this.audio.playClick();
+
+                // 1. Zoom In Camera (CSS Transform)
+                this.uiContainer.style.transform = "scale(1.1)";
+
+                const nextCard = await this.fetchCard();
+                
+                // Preload img
+                const img = new Image();
+                img.src = nextCard.image;
+                img.onload = () => {
+                    this.resolve(guess, nextCard);
+                };
+            }
+
+            resolve(guess, nextCard) {
+                const curVal = this.getCardValue(this.currentCard);
+                const nextVal = this.getCardValue(nextCard);
+                const pointsPot = this.calculatePoints(curVal, guess);
+                
+                let win = false;
+                if (curVal === nextVal) win = false; // Empate pierde en modo hardcore
+                else if (guess === 'HIGHER' && nextVal > curVal) win = true;
+                else if (guess === 'LOWER' && nextVal < curVal) win = true;
+
+                // 2. Camera Relax
+                this.uiContainer.style.transform = "scale(1)";
+
+                // Update History
+                this.history.push(this.currentCard.image);
+                if(this.history.length > 5) this.history.shift();
+
+                this.currentCard = nextCard;
+                this.renderTable(); // Re-render card visual
+
+                if (win) {
+                    this.streak++;
+                    // Streak Multiplier
+                    const multiplier = 1 + (Math.floor(this.streak / 3) * 0.5);
+                    const totalPoints = Math.floor(pointsPot * multiplier);
+                    
+                    this.score += totalPoints;
+                    this.showFloatingText(`+${totalPoints}`, '#fbbf24');
+                    this.audio.playWin(this.streak);
+                    this.canvas.explode(null, null, CONFIG.COLORS.GOLD); // Particulas
+                    this.canvas.setMood(this.streak); // Luces ambiente
+                } else {
+                    this.audio.playLose();
+                    this.showFloatingText("GAME OVER", "#f43f5e");
+                    setTimeout(() => this.onQuit(), 2000);
+                    return; // Stop here
+                }
+
+                this.updateHUD();
+            }
+
+            showFloatingText(text, color) {
+                const el = document.createElement('div');
+                el.className = 'popup-score';
+                el.innerText = text;
+                el.style.color = color;
+                el.style.left = '50%';
+                el.style.top = '40%';
+                el.style.transform = 'translate(-50%, -50%)';
+                document.body.appendChild(el); // Append to body to be on top
+                setTimeout(() => el.remove(), 1000);
+            }
+
+            updateHUD() {
+                // Rolling Counter Logic
+                const animateScore = () => {
+                    if (this.displayScore < this.score) {
+                        this.displayScore += Math.ceil((this.score - this.displayScore) / 10);
+                        this.scoreEl.innerText = this.displayScore;
+                        requestAnimationFrame(animateScore);
+                    } else {
+                        this.scoreEl.innerText = this.score;
+                    }
+                };
+                animateScore();
+
+                // Streak Badge
+                if (this.streak > 1) {
+                    this.streakEl.innerText = `🔥 x${this.streak}`;
+                    this.streakEl.classList.add('active');
+                    this.streakEl.style.color = this.streak > 5 ? '#f43f5e' : '#fbbf24';
+                } else {
+                    this.streakEl.classList.remove('active');
+                }
+            }
+        }
+
+        // ==========================================
+        // MAIN APP CONTROLLER
+        // ==========================================
+        const app = {
+            state: CONFIG.STATES.WELCOME,
+            canvas: new CanvasManager(),
+            audio: new AudioSynth(),
+            game: null,
+
+            init() {
+                // Listeners
+                document.getElementById('btn-start').onclick = () => {
+                    this.audio.playClick(); // Audio interact start context
+                    this.changeState(CONFIG.STATES.MENU);
+                };
+                
+                document.querySelector('[data-game="higher-lower"]').onclick = () => {
+                    this.game = new HigherLowerGame(this.canvas, this.audio, () => this.endGame());
+                    this.changeState(CONFIG.STATES.GAME);
+                    this.game.init();
+                };
+
+                document.getElementById('btn-quit').onclick = () => this.endGame();
+            },
+
+            endGame() {
+                this.game = null;
+                this.canvas.setMood(0); // Reset lights
+                this.changeState(CONFIG.STATES.MENU);
+            },
+
+            changeState(newState) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+                
+                if(newState === CONFIG.STATES.WELCOME) document.getElementById('screen-welcome').classList.remove('hidden');
+                if(newState === CONFIG.STATES.MENU) document.getElementById('screen-menu').classList.remove('hidden');
+                if(newState === CONFIG.STATES.GAME) document.getElementById('screen-game').classList.remove('hidden');
+            }
+        };
+
+        window.onload = () => app.init();
+
+    </script>
+</body>
+</html>

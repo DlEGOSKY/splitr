@@ -1,0 +1,37 @@
+[
+    {
+        "id": "SUN",
+        "name": "Unión Soviética",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg",
+        "dissolution": 1991,
+        "region": "Eurasia"
+    },
+    {
+        "id": "YUG",
+        "name": "Yugoslavia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/7/71/Flag_of_the_Socialist_Federal_Republic_of_Yugoslavia.svg",
+        "dissolution": 1992,
+        "region": "Europa"
+    },
+    {
+        "id": "DDR",
+        "name": "Alemania Oriental",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Flag_of_East_Germany.svg",
+        "dissolution": 1990,
+        "region": "Europa"
+    },
+    {
+        "id": "CSK",
+        "name": "Checoslovaquia",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Czech_Republic.svg",
+        "dissolution": 1992,
+        "region": "Europa"
+    },
+    {
+        "id": "VNM",
+        "name": "Vietnam del Sur",
+        "flag": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Flag_of_South_Vietnam.svg",
+        "dissolution": 1975,
+        "region": "Asia"
+    }
+]
