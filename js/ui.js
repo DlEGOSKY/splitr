@@ -64,6 +64,28 @@ const $ = id => document.getElementById(id);
 // ══════════════════════════════════════════════════════════
 // INICIALIZACIÓN
 // ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// DETECCIÓN DE RENDIMIENTO — reduce efectos en móviles lentos
+// ══════════════════════════════════════════════════════════
+function detectPerformance() {
+  // Detectar dispositivos con poca RAM o CPU lenta
+  const lowMemory  = navigator.deviceMemory !== undefined && navigator.deviceMemory <= 2;
+  const lowCores   = navigator.hardwareConcurrency !== undefined && navigator.hardwareConcurrency <= 2;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isSlowDevice = lowMemory || lowCores || prefersReduced;
+
+  if (isSlowDevice) {
+    document.documentElement.setAttribute('data-perf', 'low');
+    // Desactivar partículas y flash automáticamente en dispositivos lentos
+    if (prefersReduced) {
+      prefs.particles = false;
+      prefs.flash     = false;
+    }
+  } else {
+    document.documentElement.setAttribute('data-perf', 'high');
+  }
+}
+
 export function initUI() {
   participantsGrid  = $('participants-grid');
   inputParticipant  = $('input-participant');
@@ -161,6 +183,8 @@ export function initUI() {
       if (panel) panel.style.display = 'flex';
     });
   });
+
+  detectPerformance();
 
   // ── Splash screen — ocultar tras animación ──
   const splash = document.getElementById('splash-screen');
@@ -1569,69 +1593,115 @@ function spawnParticles(baseColor) {
   if (!particlesContainer) return;
   particlesContainer.innerHTML = '';
 
+  // ── Canvas API en lugar de DOM divs — mucho más rápido en móvil ──
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width  = W;
+  canvas.height = H;
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
   const st      = getComputedStyle(document.documentElement);
   const primary = st.getPropertyValue('--color-primary').trim() || '#7B2FBE';
   const accent  = st.getPropertyValue('--color-accent').trim()  || '#00F5FF';
   const impact  = st.getPropertyValue('--color-impact').trim()  || '#FF006E';
-  const palette = [baseColor, baseColor, accent, primary, impact, '#FFD700', '#ffffff'];
+  const palette = [baseColor, baseColor, accent, primary, impact, '#FFD700', '#fff'];
 
-  const cx    = window.innerWidth  / 2;
-  const cy    = window.innerHeight * 0.42;
-  const count = 80;
+  const cx = W / 2;
+  const cy = H * 0.42;
 
-  // Primera oleada — explosión principal
-  for (let i = 0; i < count; i++) {
-    const p     = document.createElement('div');
-    const isLong = Math.random() > 0.55; // confetti rectangular
-    const w     = isLong ? `${2 + Math.random()*3}px` : `${4 + Math.random()*5}px`;
-    const h     = isLong ? `${7 + Math.random()*9}px` : w;
-    const color = palette[Math.floor(Math.random() * palette.length)];
-    const angle = (Math.PI * 2 * i / count) + (Math.random() - 0.5) * 1.1;
-    const dist  = 70 + Math.random() * 290;
-    const px    = Math.cos(angle) * dist;
-    const py    = Math.sin(angle) * dist * 0.6 - 90;
-    const rot   = Math.random() > 0.5 ? 720 : -540;
-    const delay = Math.random() * 160;
-    const dur   = 750 + Math.random() * 750;
+  // Generar partículas como objetos (sin DOM)
+  const particles = [];
+  const COUNT = window.innerWidth < 400 ? 45 : 65; // menos en móviles pequeños
 
-    p.style.cssText = `
-      position:absolute;left:${cx}px;top:${cy}px;
-      width:${w};height:${h};background:${color};
-      border-radius:${isLong ? '1px' : '50%'};
-      --px:${px}px;--py:${py}px;--pr:${rot}deg;
-      animation:particleFly ${dur}ms cubic-bezier(0.25,0.46,0.45,0.94) ${delay}ms both;
-      box-shadow:0 0 ${isLong ? 3 : 7}px ${color};
-      pointer-events:none;
-    `;
-    particlesContainer.appendChild(p);
+  for (let i = 0; i < COUNT; i++) {
+    const isLong = Math.random() > 0.5;
+    const angle  = (Math.PI * 2 * i / COUNT) + (Math.random() - 0.5) * 1.2;
+    const speed  = 3.5 + Math.random() * 7;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed * 0.65 - 5,
+      w: isLong ? 2 + Math.random() * 3 : 3 + Math.random() * 4,
+      h: isLong ? 6 + Math.random() * 8 : 3 + Math.random() * 4,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.4,
+      alpha: 1,
+      round: !isLong,
+      delay: Math.floor(Math.random() * 8), // frames de delay
+    });
   }
 
-  // Segunda oleada — chispazo tardío hacia arriba
-  setTimeout(() => {
-    for (let i = 0; i < 35; i++) {
-      const p     = document.createElement('div');
-      const color = palette[Math.floor(Math.random() * palette.length)];
-      const sz    = 3 + Math.random() * 5;
-      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.8;
-      const dist  = 100 + Math.random() * 220;
-      const rot   = Math.random() > 0.5 ? 360 : -360;
+  // Segunda oleada hacia arriba
+  for (let i = 0; i < 25; i++) {
+    const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 0.9;
+    const speed = 4 + Math.random() * 6;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 2,
+      w: 3 + Math.random() * 3,
+      h: 3 + Math.random() * 3,
+      color: palette[Math.floor(Math.random() * palette.length)],
+      rot: 0, rotV: (Math.random() - 0.5) * 0.3,
+      alpha: 1,
+      round: true,
+      delay: 7 + Math.floor(Math.random() * 6),
+    });
+  }
 
-      p.style.cssText = `
-        position:absolute;left:${cx}px;top:${cy}px;
-        width:${sz}px;height:${sz}px;background:${color};
-        border-radius:50%;
-        --px:${Math.cos(angle)*dist}px;
-        --py:${Math.sin(angle)*dist - 50}px;
-        --pr:${rot}deg;
-        animation:particleFly ${1100 + Math.random()*500}ms ease-out both;
-        box-shadow:0 0 10px ${color};
-        pointer-events:none;
-      `;
-      particlesContainer.appendChild(p);
+  const GRAVITY = 0.28;
+  let frame = 0;
+  let rafId;
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    frame++;
+
+    let alive = 0;
+    for (const p of particles) {
+      if (frame < p.delay) { alive++; continue; }
+
+      p.vy   += GRAVITY;
+      p.x    += p.vx;
+      p.y    += p.vy;
+      p.rot  += p.rotV;
+      p.alpha = Math.max(0, p.alpha - 0.018);
+      p.vx   *= 0.98; // fricción suave
+
+      if (p.alpha <= 0) continue;
+      alive++;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle   = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+
+      if (p.round) {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.w / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      }
+      ctx.restore();
     }
-  }, 120);
 
-  setTimeout(() => { if (particlesContainer) particlesContainer.innerHTML = ''; }, 2200);
+    if (alive > 0 && frame < 140) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      canvas.remove();
+    }
+  }
+
+  rafId = requestAnimationFrame(tick);
+
+  // Seguro: limpiar si el usuario navega antes de que terminen
+  setTimeout(() => { cancelAnimationFrame(rafId); canvas.remove(); }, 2800);
 }
 
 // ══════════════════════════════════════════════════════════

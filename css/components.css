@@ -536,6 +536,7 @@
   gap: var(--space-md);
   padding: var(--space-lg);
   overflow: hidden;
+  will-change: opacity;
 }
 
 #result-overlay.visible {

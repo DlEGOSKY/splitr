@@ -5,16 +5,9 @@
 
 /* ── ANILLO DE PULSO DE AVATARES (estado idle) ── */
 @keyframes avatarRingPulse {
-  0%, 100% {
-    box-shadow:
-      0 0 0 2px var(--avatar-color, var(--color-primary)),
-      0 0 8px 2px rgba(var(--avatar-rgb, 123, 47, 190), 0.4);
-  }
-  50% {
-    box-shadow:
-      0 0 0 3px var(--avatar-color, var(--color-primary)),
-      0 0 16px 4px rgba(var(--avatar-rgb, 123, 47, 190), 0.7);
-  }
+  /* Solo opacity — no repinta box-shadow en cada frame */
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.04); }
 }
 
 /* ── ESCÁNER DURANTE LA SELECCIÓN ── */
@@ -27,9 +20,10 @@
 
 /* ── AVATAR RESALTADO (durante el barrido) ── */
 @keyframes avatarFlash {
-  0%   { transform: scale(1); filter: brightness(1); }
-  50%  { transform: scale(1.12); filter: brightness(1.8) saturate(1.5); }
-  100% { transform: scale(1); filter: brightness(1); }
+  /* Sin filter — solo transform para 60fps en móvil */
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
 }
 
 /* ── SPRING DEL GANADOR ── */
@@ -50,8 +44,8 @@
 
 /* ── TEXTO DEL RESULTADO — entrada explosiva ── */
 @keyframes resultReveal {
-  0%   { transform: scale(0.3) rotate(-5deg); opacity: 0; filter: blur(10px); }
-  60%  { transform: scale(1.1) rotate(1deg); opacity: 1; filter: blur(0); }
+  0%   { transform: scale(0.3) rotate(-5deg); opacity: 0; }
+  60%  { transform: scale(1.1) rotate(1deg); opacity: 1; }
   80%  { transform: scale(0.97) rotate(-0.5deg); }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
@@ -164,12 +158,12 @@
   from {
     letter-spacing: 0.5em;
     opacity: 0;
-    filter: blur(6px);
+    /*  — eliminado por rendimiento en móvil */
   }
   to {
     letter-spacing: 0.05em;
     opacity: 1;
-    filter: blur(0);
+
   }
 }
 
@@ -187,8 +181,8 @@
 
 /* ── COUNTDOWN: cada dígito entra, se queda, sale ── */
 @keyframes countdownDigit {
-  0%   { transform: scale(2.2) translateY(15px); opacity: 0; filter: blur(6px); }
-  30%  { transform: scale(1)   translateY(0);    opacity: 1; filter: blur(0); }
+  0%   { transform: scale(2.2) translateY(15px); opacity: 0;  }
+  30%  { transform: scale(1)   translateY(0);    opacity: 1;  }
   70%  { transform: scale(1)   translateY(0);    opacity: 1; }
   100% { transform: scale(0.4) translateY(-20px); opacity: 0; filter: blur(3px); }
 }
@@ -229,7 +223,7 @@
 /* ── GRID: entrada escalonada refinada ── */
 @keyframes gridReveal {
   from { transform: scale(0.6) rotate(-8deg); opacity: 0; filter: blur(3px); }
-  to   { transform: scale(1)   rotate(0deg);  opacity: 1; filter: blur(0); }
+  to   { transform: scale(1)   rotate(0deg);  opacity: 1;  }
 }
 
 /* ── MODO BTN: flash al activar ── */
@@ -288,19 +282,21 @@
 
 /* ── SCREEN SHAKE — temblor al revelar ── */
 @keyframes screenShake {
+  /* Solo translateX — sin rotate para evitar repaint del layout completo */
   0%,100% { transform: translateX(0); }
-  15%     { transform: translateX(-8px) rotate(-0.5deg); }
-  30%     { transform: translateX(7px)  rotate(0.4deg); }
-  45%     { transform: translateX(-5px) rotate(-0.3deg); }
-  60%     { transform: translateX(4px)  rotate(0.2deg); }
-  75%     { transform: translateX(-3px); }
-  88%     { transform: translateX(2px); }
+  15%     { transform: translateX(-7px); }
+  30%     { transform: translateX(6px); }
+  45%     { transform: translateX(-4px); }
+  60%     { transform: translateX(3px); }
+  75%     { transform: translateX(-2px); }
+  88%     { transform: translateX(1px); }
 }
 
 /* ── SLOW SCAN — avatar iluminado en cámara lenta ── */
 @keyframes slowScanPulse {
-  0%,100% { box-shadow: 0 0 0 2px var(--avatar-color), 0 0 20px 6px var(--avatar-glow); transform: scale(1.05); }
-  50%     { box-shadow: 0 0 0 4px var(--avatar-color), 0 0 35px 10px var(--avatar-glow); transform: scale(1.12); }
+  /* Sin box-shadow animado — el glow estático se maneja en components.css */
+  0%,100% { transform: scale(1.05); opacity: 1; }
+  50%     { transform: scale(1.13); opacity: 0.92; }
 }
 
 /* ── PARTÍCULA CON TRAYECTORIA ── */
@@ -312,9 +308,9 @@
 
 /* ── COLOR REFLOW — pulso suave al redistribuir colores ── */
 @keyframes colorReflow {
-  0%   { transform: scale(1);    filter: brightness(1); }
-  40%  { transform: scale(1.08); filter: brightness(1.5) saturate(1.3); }
-  100% { transform: scale(1);    filter: brightness(1); }
+  0%   { transform: scale(1); opacity: 1; }
+  40%  { transform: scale(1.08); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 /* ══════════════════════════════════════════════
@@ -343,7 +339,7 @@
 /* Avatar: cae desde arriba con spring */
 @keyframes avatarDrop {
   0%   { transform: scale(0) translateY(-80px) rotate(-15deg); opacity: 0; filter: blur(8px); }
-  60%  { transform: scale(1.12) translateY(6px) rotate(2deg);  opacity: 1; filter: blur(0); }
+  60%  { transform: scale(1.12) translateY(6px) rotate(2deg);  opacity: 1;  }
   80%  { transform: scale(0.96) translateY(-2px) rotate(-1deg); }
   100% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
 }
@@ -351,7 +347,7 @@
 /* Nombre: revelación de abajo hacia arriba como persiana */
 @keyframes nameReveal {
   0%   { transform: translateY(40px) scaleY(0.3); opacity: 0; filter: blur(12px); }
-  50%  { filter: blur(0); }
+  50%  {  }
   70%  { transform: translateY(-4px) scaleY(1.03); opacity: 1; }
   100% { transform: translateY(0) scaleY(1); opacity: 1; }
 }
@@ -372,4 +368,46 @@
     stroke-dasharray: var(--arc-full) 239;
     opacity: 1;
   }
+}
+
+/* ══════════════════════════════════════════════
+   MODO BAJO RENDIMIENTO — prefers-reduced-motion
+   o dispositivos con poca RAM/CPU
+   ══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Desactivar animaciones infinitas en modo low-perf */
+[data-perf="low"] .avatar-wrap.scanning .avatar {
+  animation-duration: 80ms !important;
+}
+
+[data-perf="low"] #result-overlay .winner-avatar-big {
+  animation: none !important;
+  transform: scale(2);
+  opacity: 1;
+}
+
+[data-perf="low"] .russian-gun {
+  animation: none !important;
+}
+
+[data-perf="low"] .russian-gun-wrap::before {
+  animation: none !important;
+}
+
+/* Forzar GPU compositing en elementos animados clave */
+.avatar,
+#result-overlay,
+#countdown-overlay,
+#russian-overlay,
+.mode-btn.active,
+.btn-sortear {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
