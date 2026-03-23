@@ -5,7 +5,7 @@
    ============================================================ */
 
 /** @typedef {'idle' | 'spinning' | 'revealing' | 'result'} Phase */
-/** @typedef {'normal' | 'elimination' | 'team' | 'order' | 'revenge' | 'duel' | 'split' | 'russian' | 'tournament'} GameMode */
+/** @typedef {'normal' | 'elimination' | 'team' | 'order' | 'revenge' | 'duel' | 'split' | 'russian' | 'tournament' | 'coin' | 'dice' | 'bomb' | 'voice'} GameMode */
 
 /**
  * Estructura de un participante:
@@ -171,6 +171,11 @@ export const state = {
     }
 
     if (_state.mode === 'tournament') return active.length >= 2;
+
+    if (_state.mode === 'coin')  return active.length >= 2;
+    if (_state.mode === 'dice')  return active.length >= 2;
+    if (_state.mode === 'bomb')  return active.length >= 2;
+    if (_state.mode === 'voice') return active.length >= 1;
 
     return active.length >= 2;
   },

@@ -115,6 +115,10 @@
         <button class="mode-btn"        data-mode="split"       aria-pressed="false">Dividir</button>
         <button class="mode-btn"        data-mode="russian"     aria-pressed="false">Ruleta Rusa</button>
         <button class="mode-btn"        data-mode="tournament"  aria-pressed="false">Torneo</button>
+        <button class="mode-btn"        data-mode="coin"        aria-pressed="false">Cara o Cruz</button>
+        <button class="mode-btn"        data-mode="dice"        aria-pressed="false">Dado</button>
+        <button class="mode-btn"        data-mode="bomb"        aria-pressed="false">Bomba</button>
+        <button class="mode-btn"        data-mode="voice"       aria-pressed="false">Por Voz</button>
       </div>
 
       <!-- Sub-opciones contextuales por modo -->
@@ -208,6 +212,34 @@
             </div>
           </div>
         </div>
+        <!-- Cara o Cruz -->
+        <div class="mode-desc-panel" data-for="coin">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/><path d="M9 3.5A9 9 0 0 0 3.5 9"/></svg>
+          </span>
+          <span class="mode-desc-text">Cara o Cruz — la moneda gira y decide entre dos participantes.</span>
+        </div>
+        <!-- Dado -->
+        <div class="mode-desc-panel" data-for="dice">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="16" cy="16" r="1.2" fill="currentColor"/><circle cx="16" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="16" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
+          </span>
+          <span class="mode-desc-text">Lanza un dado — el número 1 al 6 determina quién paga según su posición.</span>
+        </div>
+        <!-- Bomba -->
+        <div class="mode-desc-panel" data-for="bomb">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="13" r="7"/><path d="M11 6V4M14 3l-3 3"/><path d="M20 4l-2 2"/></svg>
+          </span>
+          <span class="mode-desc-text">Hot potato — la bomba pasa de mano en mano y explota en el condenado.</span>
+        </div>
+        <!-- Por Voz -->
+        <div class="mode-desc-panel" data-for="voice">
+          <span class="mode-desc-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+          </span>
+          <span class="mode-desc-text">Di en voz alta el nombre del elegido — el micrófono lo detecta.</span>
+        </div>
       </div>
     </div>
 
@@ -252,15 +284,18 @@
       <span id="duel-banner-text">Toca 2 avatares para enfrentarlos</span>
     </div>
 
-    <!-- Grid de avatares de participantes -->
-    <div
-      class="participants-grid"
-      id="participants-grid"
-      role="list"
-      aria-label="Participantes"
-      aria-live="polite"
-    >
-      <!-- Renderizado dinámico por ui.js -->
+    <!-- Sección scrolleable: grid de avatares -->
+    <div class="participants-section">
+      <!-- Grid de avatares de participantes -->
+      <div
+        class="participants-grid"
+        id="participants-grid"
+        role="list"
+        aria-label="Participantes"
+        aria-live="polite"
+      >
+        <!-- Renderizado dinámico por ui.js -->
+      </div>
     </div>
 
     <div class="neon-divider"></div>
@@ -420,7 +455,7 @@
       </div>
       <div class="tournament-champion-avatar" id="tournament-champion-avatar"></div>
       <div class="tournament-champion-name" id="tournament-champion-name"></div>
-      <div class="tournament-champion-label">CAMPEÓN DEL TORNEO</div>
+      <div class="tournament-champion-label" id="tournament-champion-label">EL ELEGIDO DEL TORNEO</div>
       <button class="btn btn-accent" id="tournament-close-champion" style="margin-top:16px;width:100%;">Cerrar</button>
     </div>
   </div>
@@ -882,9 +917,73 @@
       <button class="btn btn-primary" id="btn-settings-save" style="flex:1;">Guardar</button>
       <button class="btn btn-accent"  id="btn-settings-cancel">Cancelar</button>
     </div>
+
+    <div class="neon-divider" style="margin-top:var(--space-lg);"></div>
+
+    <!-- Skins de animación -->
+    <div class="skins-section">
+      <div class="skins-section-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span>Animaciones</span>
+        <span class="skins-pro-badge">PRO</span>
+      </div>
+      <p class="settings-hint" style="margin-bottom:var(--space-md);">Elige el estilo de animación para cada modo. Las animaciones Pro se desbloquean con un pago único.</p>
+      <div id="skins-picker-list"></div>
+    </div>
   </div>
 </div>
 
+
+
+<!-- ═══════════════════════════════════════════════════
+     MODAL PAYWALL — Splitr Pro
+     ═══════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-paywall" style="display:none;" role="dialog" aria-modal="true" aria-label="Splitr Pro">
+  <div class="modal-sheet paywall-sheet">
+    <div class="modal-handle" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <div class="paywall-header">
+      <div class="paywall-badge">PRO</div>
+      <h2 class="paywall-title">Splitr Pro</h2>
+      <p class="paywall-subtitle">Desbloquea todas las animaciones exclusivas para cada modo de juego</p>
+    </div>
+
+    <!-- Bundle destacado -->
+    <div class="paywall-bundle">
+      <div class="paywall-bundle-top">
+        <div class="paywall-bundle-left">
+          <div class="paywall-bundle-tag">MEJOR VALOR — 58% OFF</div>
+          <div class="paywall-bundle-name">Pack Completo Pro</div>
+          <div class="paywall-bundle-desc">12 animaciones exclusivas para los 6 modos</div>
+        </div>
+        <div class="paywall-bundle-price">
+          <span class="paywall-price-old">$11.88</span>
+          <span class="paywall-price-main">$4.99</span>
+        </div>
+      </div>
+      <div class="paywall-bundle-features">
+        <span class="paywall-feature-pill">12 animaciones</span>
+        <span class="paywall-feature-pill">Todos los modos</span>
+        <span class="paywall-feature-pill">Pago único</span>
+        <span class="paywall-feature-pill">Sin suscripción</span>
+      </div>
+      <button class="paywall-bundle-cta" id="btn-buy-bundle">
+        Obtener Todo por $4.99
+      </button>
+    </div>
+
+    <!-- Separador -->
+    <div class="paywall-divider"><span>o elige por modo</span></div>
+
+    <!-- Items individuales (dinámico) -->
+    <div class="paywall-items" id="paywall-items-list"></div>
+
+    <!-- Footer -->
+    <button class="paywall-restore" id="btn-restore-purchases">Restaurar compras anteriores</button>
+    <button class="paywall-close" id="btn-paywall-close">Ahora no</button>
+  </div>
+</div>
 
 <!-- Módulo JS principal (ES Modules) -->
 <script type="module" src="js/main.js"></script>

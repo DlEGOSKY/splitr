@@ -411,3 +411,11 @@
   transform: translateZ(0);
   backface-visibility: hidden;
 }
+
+/* ── INTRO DE MODO — flash temático antes del countdown ── */
+@keyframes modeIntroFlash {
+  0%   { opacity: 0; background: transparent; }
+  15%  { opacity: 1; background: rgba(4,2,14,0.92); }
+  75%  { opacity: 1; background: rgba(4,2,14,0.92); }
+  100% { opacity: 0; background: transparent; }
+}

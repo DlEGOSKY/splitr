@@ -97,10 +97,32 @@ body {
   flex: 1;
   gap: var(--space-md);
   animation: fadeIn 200ms ease;
+  min-height: 0; /* necesario para que el flex hijo no desborde */
 }
 
 .screen.active {
   display: flex;
+}
+
+/* En pantallas altas (PC/tablet), hacer que el grid de avatares sea scrolleable
+   y el botón SORTEAR quede fijo al fondo */
+@media (min-height: 600px) {
+  #screen-home {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  #screen-home.active {
+    display: flex;
+  }
+  .participants-section {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    scrollbar-width: none;
+  }
+  .participants-section::-webkit-scrollbar { display: none; }
 }
 
 /* ── UTILIDADES GLOBALES ── */

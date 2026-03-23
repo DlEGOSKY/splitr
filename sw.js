@@ -1,30 +1,31 @@
 /* ============================================================
    SW.JS — Splitr v1.0
-   GitHub Pages: https://DIEGOSKY.github.io/splitr
+   Usa rutas relativas para funcionar tanto en local como en GitHub Pages
    ============================================================ */
 
-const CACHE_NAME = 'splitr-v1.0';
-const BASE = '/splitr';
+const CACHE_NAME = 'splitr-v1.1';
 
+// Rutas relativas al scope del SW — funcionan en cualquier subdirectorio
 const PRECACHE_ASSETS = [
-  `${BASE}/index.html`,
-  `${BASE}/manifest.json`,
-  `${BASE}/css/base.css`,
-  `${BASE}/css/animations.css`,
-  `${BASE}/css/components.css`,
-  `${BASE}/css/themes.css`,
-  `${BASE}/js/main.js`,
-  `${BASE}/js/state.js`,
-  `${BASE}/js/participants.js`,
-  `${BASE}/js/selector.js`,
-  `${BASE}/js/audio.js`,
-  `${BASE}/js/storage.js`,
-  `${BASE}/js/ui.js`,
-  `${BASE}/js/icons.js`,
-  `${BASE}/icons/icon-192.png`,
-  `${BASE}/icons/icon-512.png`,
-  `${BASE}/icons/icon-192.svg`,
-  `${BASE}/icons/icon-512.svg`,
+  './',
+  './index.html',
+  './manifest.json',
+  './css/base.css',
+  './css/animations.css',
+  './css/components.css',
+  './css/themes.css',
+  './js/main.js',
+  './js/state.js',
+  './js/participants.js',
+  './js/selector.js',
+  './js/audio.js',
+  './js/storage.js',
+  './js/ui.js',
+  './js/icons.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-192.svg',
+  './icons/icon-512.svg',
 ];
 
 self.addEventListener('install', event => {
@@ -32,9 +33,8 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(cache =>
       Promise.allSettled(
         PRECACHE_ASSETS.map(url =>
-          cache.add(url).catch(err =>
-            console.warn('[SW] No se pudo cachear:', url, err)
-          )
+          cache.add(new Request(url, { cache: 'reload' }))
+            .catch(err => console.warn('[SW] No se pudo cachear:', url, err.message))
         )
       )
     ).then(() => self.skipWaiting())
@@ -45,7 +45,10 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys.filter(k => k !== CACHE_NAME).map(k => {
+          console.log('[SW] Eliminando caché antigua:', k);
+          return caches.delete(k);
+        })
       )
     ).then(() => self.clients.claim())
   );
@@ -77,7 +80,7 @@ async function cacheFirst(request) {
     return response;
   } catch {
     return new Response(
-      '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Splitr</title></head><body style="background:#090912;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;"><div><h1 style="color:#00F5FF;font-size:2rem;">Splitr</h1><p>Sin conexión — abre cuando tengas internet</p></div></body></html>',
+      '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Splitr</title></head><body style="background:#090912;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;text-align:center;"><div><h1 style="color:#00F5FF;">Splitr</h1><p>Sin conexión — abre cuando tengas internet</p></div></body></html>',
       { headers: { 'Content-Type': 'text/html' } }
     );
   }
