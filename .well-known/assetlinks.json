@@ -2,9 +2,11 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "TU_PACKAGE_NAME_AQUI",
+    "package_name": "com.dlegosky.splitr",
     "sha256_cert_fingerprints": [
-      "TU_SHA256_FINGERPRINT_AQUI"
+      "48:EB:FE:AC:AE:98:E4:B6:BB:37:87:18:32:14:78:0B:93:2C:02:E0:15:51:03:09:10:FA:C8:D2:F5:EF:7E:3B"
     ]
   }
 }]
+
+
