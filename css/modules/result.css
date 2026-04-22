@@ -1,0 +1,205 @@
+/* ══════════════════════════════════════════════════════════
+   RESULT OVERLAY MODULE — Team mode additions
+   El resto del #result-overlay aún vive en components.css.
+   ══════════════════════════════════════════════════════════ */
+
+/* Teammates (modo team) — lista horizontal de chips bajo el nombre */
+.result-teammates {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: calc(var(--space-sm) * -1);
+  margin-bottom: var(--space-xs);
+  max-width: min(560px, 92vw);
+  width: 100%;
+  padding: 0 var(--space-sm);
+}
+
+.result-teammates-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.result-teammates-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs);
+  max-width: 100%;
+}
+
+.result-teammate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s, background 0.2s;
+  animation: teammateChipIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.result-teammate-chip:nth-child(1) { animation-delay: 0.65s; }
+.result-teammate-chip:nth-child(2) { animation-delay: 0.72s; }
+.result-teammate-chip:nth-child(3) { animation-delay: 0.79s; }
+.result-teammate-chip:nth-child(4) { animation-delay: 0.86s; }
+.result-teammate-chip:nth-child(5) { animation-delay: 0.93s; }
+.result-teammate-chip:nth-child(n+6) { animation-delay: 1s; }
+
+.result-teammate-chip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.result-teammate-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.result-teammate-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes teammateChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Respeta prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .result-teammate-chip {
+    animation: none;
+  }
+}
+
+/* Spinner para botones cargando (ej: generando imagen) */
+.result-actions .spin {
+  animation: resultSpin 0.9s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes resultSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   REACTION BAR — feedback emocional post-resultado
+   Iconos SVG propios con stroke neón por color del tipo.
+   ══════════════════════════════════════════════════════════ */
+
+.reaction-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-md);
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.reaction-btn {
+  --reaction-hue: 200;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid hsla(var(--reaction-hue), 80%, 60%, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  color: hsl(var(--reaction-hue), 95%, 70%);
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 0 4px hsla(var(--reaction-hue), 95%, 60%, 0.35));
+}
+
+.reaction-btn:hover {
+  background: hsla(var(--reaction-hue), 80%, 50%, 0.12);
+  border-color: hsla(var(--reaction-hue), 90%, 65%, 0.55);
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 14px hsla(var(--reaction-hue), 80%, 40%, 0.35),
+    inset 0 0 12px hsla(var(--reaction-hue), 90%, 60%, 0.12);
+}
+
+.reaction-btn:active {
+  transform: translateY(0) scale(0.9);
+}
+
+.reaction-btn-last {
+  border-color: hsla(var(--reaction-hue), 95%, 70%, 0.7);
+  background: hsla(var(--reaction-hue), 85%, 55%, 0.15);
+  box-shadow:
+    0 0 0 1px hsla(var(--reaction-hue), 95%, 70%, 0.3),
+    0 4px 16px hsla(var(--reaction-hue), 85%, 45%, 0.35);
+}
+
+.reaction-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reaction-btn {
+    transition: none;
+  }
+  .reaction-btn:hover {
+    transform: none;
+  }
+}
+
+/* En pantallas estrechas, reducir tamaño del botón */
+@media (max-width: 400px) {
+  .reaction-bar {
+    gap: 6px;
+    padding: 6px 8px;
+  }
+  .reaction-btn {
+    width: 40px;
+    height: 40px;
+  }
+}

@@ -1,0 +1,1483 @@
+/* ============================================================
+   UX-IMPROVEMENTS.CSS — Refinamiento de timings y jerarquía visual
+   Mejoras específicas para Prioridad 3: Refinamiento UX
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════
+   TIMINGS MEJORADOS — Más naturales y menos cansados
+   ══════════════════════════════════════════════════════════ */
+
+/* Reducir pulso idle de avatares — menos distracción */
+.participant-card .avatar-ring {
+  animation: avatarRingPulse 4s ease-in-out infinite;
+  /* Antes: 2s, ahora: 4s — menos frecuente */
+}
+
+/* Modal más suave y rápido */
+.modal.open {
+  animation: modalIn 280ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Antes: sin timing específico, ahora: spring suave */
+}
+
+/* Toast más sutil */
+.toast.visible {
+  animation: toastIn 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Timing más natural, menos rebote */
+}
+
+.toast:not(.visible) {
+  animation: toastOut 150ms ease-in;
+  /* Salida más rápida */
+}
+
+/* Entrada de participante más elegante */
+.participant-card {
+  animation: participantIn 320ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* Spring más controlado */
+}
+
+/* ══════════════════════════════════════════════════════════
+   JERARQUÍA VISUAL MEJORADA — Menos ruido, más foco
+   ══════════════════════════════════════════════════════════ */
+
+/* Reducir glow en elementos secundarios */
+.btn:not(.btn-primary):not(.btn-accent) {
+  box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.15);
+  /* Antes: 0.3, ahora: 0.15 — menos agresivo */
+}
+
+/* Stats más limpio */
+.stats-participant {
+  background: rgba(255, 255, 255, 0.03);
+  /* Antes: 0.05, ahora: 0.03 — más sutil */
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Antes: 0.1, ahora: 0.06 */
+}
+
+/* Settings con menos glow */
+.modal-settings .setting-row {
+  background: rgba(255, 255, 255, 0.02);
+  /* Más sutil que el modal principal */
+}
+
+/* Reducir parpadeo neón en elementos no críticos */
+.theme-swatch:not(.active) {
+  animation: none;
+  /* Quitar parpadeo idle */
+}
+
+/* ══════════════════════════════════════════════════════════
+   FEEDBACK TÁCTIL MÁS FINO
+   ══════════════════════════════════════════════════════════ */
+
+/* Hover más sutil en botones secundarios */
+.btn:not(.btn-primary):hover {
+  transform: translateY(-1px);
+  transition: transform 120ms ease;
+  /* Antes: scale, ahora: translateY — más sutil */
+}
+
+/* Pressed state más natural */
+.btn:active {
+  transform: translateY(0px) scale(0.98);
+  transition: transform 60ms ease;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ESTADOS DE CARGA MEJORADOS
+   ══════════════════════════════════════════════════════════ */
+
+/* Spinner más elegante */
+@keyframes spinnerElegant {
+  0% { 
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% { 
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.loading-spinner {
+  animation: spinnerElegant 1.2s linear infinite;
+  /* Más lento y con fade */
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODO REDUCIDO — Para prefers-reduced-motion
+   ══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  /* Eliminar animaciones no esenciales */
+  .participant-card .avatar-ring,
+  .theme-swatch,
+  .stats-bar,
+  .donut-legend-item {
+    animation: none !important;
+  }
+  
+  /* Mantener solo transiciones básicas */
+  .btn, .modal, .toast {
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  
+  /* Reducir efectos de partículas aún más */
+  .particle {
+    display: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MEJORAS ESPECÍFICAS POR PANTALLA
+   ══════════════════════════════════════════════════════════ */
+
+/* HOME: Mantener intensidad pero más controlada */
+#screen-home .participant-grid {
+  /* Espaciado más generoso */
+  gap: 12px;
+  /* Antes: 8px */
+}
+
+/* STATS: Integrado al fondo, sin recuadro sólido */
+#screen-stats {
+  background: transparent;
+}
+
+.stats-participant .stats-bar {
+  animation-duration: 800ms;
+  /* Antes: 600ms, ahora más pausado */
+}
+
+/* SETTINGS: Priorizar funcionalidad */
+.modal-settings {
+  backdrop-filter: blur(12px);
+  /* Más blur para separar del fondo */
+}
+
+.setting-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  /* Hover muy sutil */
+  transition: background 200ms ease;
+}
+
+/* ══════════════════════════════════════════════════════════
+   JERARQUÍA VISUAL EN MODALES — Mejor organización y legibilidad
+   ══════════════════════════════════════════════════════════ */
+
+/* Modal headers más claros */
+.modal h2, .modal h3 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-bright);
+  /* Menos glow en títulos para mejor legibilidad */
+  text-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.3);
+}
+
+/* Secciones mejor definidas */
+.modal .section {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.modal .section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+/* Labels más legibles */
+.modal label, .setting-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Inputs y controles más claros */
+.modal input, .modal select, .modal textarea {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  transition: border-color var(--timing-normal) ease,
+              background var(--timing-normal) ease;
+}
+
+.modal input:focus, .modal select:focus, .modal textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 2px rgba(var(--color-accent-rgb), 0.2);
+}
+
+/* Botones con mejor jerarquía */
+.modal .btn-primary {
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(var(--color-accent-rgb), 0.3);
+}
+
+.modal .btn-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-text);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+.modal .btn-danger {
+  background: var(--color-impact);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 0, 110, 0.3);
+}
+
+/* Grupos de botones más organizados */
+.modal .button-group {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Settings específicos */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-info {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.setting-title {
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.setting-desc {
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  line-height: 1.3;
+}
+
+.setting-control {
+  flex-shrink: 0;
+}
+
+/* Sliders más elegantes */
+.slider {
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--color-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(var(--color-accent-rgb), 0.4);
+  transition: transform var(--timing-fast) ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Checkboxes más claros */
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--timing-normal) ease;
+}
+
+.checkbox:checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.checkbox:checked::after {
+  content: '✓';
+  display: block;
+  color: var(--color-bg);
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 14px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TIMING VARIABLES — Para ajustes finos
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Duraciones base */
+  --timing-fast: 150ms;
+  --timing-normal: 250ms;
+  --timing-slow: 400ms;
+  
+  /* Easings mejorados */
+  --ease-out-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-natural: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Opacidades refinadas */
+  --opacity-subtle: 0.02;
+  --opacity-soft: 0.05;
+  --opacity-visible: 0.1;
+}
+
+/* ══════════════════════════════════════════════════════════
+   REDUCIR CANSANCIO VISUAL — Menos efectos agresivos
+   ══════════════════════════════════════════════════════════ */
+
+/* Reducir intensidad de glow en elementos idle */
+.participant-card:not(.winner):not(.highlighted) {
+  box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.08);
+  /* Antes: 0.15, ahora: 0.08 — mucho más sutil */
+}
+
+/* Eliminar parpadeo constante en elementos no críticos */
+.theme-swatch:not(.active),
+.mode-btn:not(.active),
+.btn:not(.btn-primary):not(:hover) {
+  animation: none;
+}
+
+/* Reducir frecuencia de pulsos */
+.avatar-ring {
+  animation-duration: 6s; /* Antes: 2s, ahora: 6s */
+  animation-timing-function: ease-in-out;
+}
+
+/* Glow más controlado en botones secundarios */
+.btn:not(.btn-primary) {
+  box-shadow: 0 0 6px rgba(var(--color-accent-rgb), 0.1);
+  /* Mucho más sutil */
+}
+
+.btn:not(.btn-primary):hover {
+  box-shadow: 0 0 12px rgba(var(--color-accent-rgb), 0.2);
+  /* Solo en hover */
+}
+
+/* Reducir intensidad de efectos de texto */
+.result-name {
+  text-shadow: 0 0 16px rgba(var(--color-accent-rgb), 0.6);
+  /* Antes: 1.0, ahora: 0.6 */
+}
+
+.countdown-digit {
+  text-shadow: 0 0 20px rgba(var(--color-accent-rgb), 0.7);
+  /* Menos agresivo */
+}
+
+/* Partículas más sutiles */
+.particle {
+  opacity: 0.7;
+  /* Antes: 1.0, ahora: 0.7 */
+}
+
+/* Reducir contraste en elementos de fondo */
+.stats-empty-visual .stats-empty-bar {
+  background: rgba(255, 255, 255, 0.04);
+  /* Antes: 0.08, ahora: 0.04 */
+}
+
+/* Borders más sutiles */
+.modal, .card, .participant-card {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Antes: 0.1, ahora: 0.06 */
+}
+
+/* Backdrop más suave */
+.modal-backdrop {
+  background: rgba(4, 2, 14, 0.85);
+  backdrop-filter: blur(8px);
+  /* Menos opaco, más blur */
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODO NOCTURNO MEJORADO — Para uso prolongado
+   ══════════════════════════════════════════════════════════ */
+
+/* Reducir brillo general en modo nocturno */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: rgba(255, 255, 255, 0.85);
+    /* Antes: 0.95, ahora: 0.85 */
+    --color-text-dim: rgba(255, 255, 255, 0.5);
+    /* Antes: 0.65, ahora: 0.5 */
+  }
+  
+  /* Fondo ligeramente más oscuro */
+  body {
+    background: #050208;
+    /* Más oscuro que el original */
+  }
+  
+  /* Reducir glow en modo nocturno */
+  .btn, .participant-card, .modal {
+    box-shadow: 0 0 8px rgba(var(--color-accent-rgb), 0.06);
+    /* Muy sutil en modo nocturno */
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   OPTIMIZACIONES PARA SESIONES LARGAS
+   ══════════════════════════════════════════════════════════ */
+
+/* Después de 10 minutos, reducir efectos automáticamente */
+.app-long-session {
+  --opacity-subtle: 0.01;
+  --opacity-soft: 0.03;
+  --opacity-visible: 0.06;
+}
+
+.app-long-session .participant-card .avatar-ring {
+  animation-duration: 10s;
+  /* Aún más lento */
+}
+
+.app-long-session .particle {
+  opacity: 0.5;
+  /* Partículas casi transparentes */
+}
+
+/* ══════════════════════════════════════════════════════════
+   MEJORAS DE ACCESIBILIDAD
+   ══════════════════════════════════════════════════════════ */
+
+/* Mejor contraste para texto importante */
+.result-name, .modal h2, .participant-name {
+  color: rgba(255, 255, 255, 0.95);
+  /* Asegurar legibilidad */
+}
+
+/* Focus más visible */
+.btn:focus-visible, .participant-card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Reducir motion para usuarios sensibles */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .particle, .avatar-ring {
+    display: none !important;
+  }
+}
+
+/* Scanning line effect during spin */
+.grid-scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  animation: scanLine 2s ease-in-out infinite;
+  z-index: 10;
+  box-shadow: 0 0 10px var(--color-accent);
+}
+
+/* Luck indicator badge */
+.luck-indicator {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.luck-low { color: #ff4081; }
+.luck-high { color: #64ffda; }
+
+/* Avatar remove button */
+.avatar-remove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-impact, #ff006e);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 0.6rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-weight: 700;
+  z-index: 2;
+}
+
+/* Avatar remove button — show on hover/focus */
+.avatar-wrap:hover .avatar-remove,
+.avatar-wrap:focus-within .avatar-remove {
+  display: flex !important;
+}
+
+/* Force base avatar animation to work */
+.avatar {
+  animation: avatarRingPulse 2.5s ease-in-out infinite !important;
+}
+
+/* Intro animations */
+@keyframes glowPulse {
+  0%, 100% { text-shadow: 0 0 10px var(--color-accent); }
+  50%      { text-shadow: 0 0 20px var(--color-accent), 0 0 30px var(--color-accent); }
+}
+
+@keyframes particleBurst {
+  0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(0); opacity: 0; }
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes overlayFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes countdownPop {
+  0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  50%  { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes pulseRing {
+  0%   { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RUSSIAN ROULETTE OVERLAY
+   ══════════════════════════════════════════════════════════ */
+
+.russian-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(20,10,30,0.96) 0%, rgba(4,2,14,0.98) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  color: var(--color-text);
+  animation: overlayFadeIn 300ms ease both;
+}
+
+.russian-scene {
+  text-align: center;
+  position: relative;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.russian-turn-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.russian-player-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.russian-player-display.shaking {
+  animation: playerShake 0.5s ease-in-out;
+}
+
+.russian-player-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 0 0 3px var(--avatar-color, var(--color-accent)),
+              0 0 24px var(--avatar-glow, rgba(0,245,255,0.3)),
+              0 8px 24px rgba(0,0,0,0.4);
+}
+
+.russian-player-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  margin-top: 10px;
+  letter-spacing: 0.02em;
+}
+
+.russian-odds {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-dim);
+  margin: 14px 0;
+}
+
+.russian-chambers {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 18px 0;
+}
+
+.russian-chamber {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.russian-chamber.spent {
+  background: var(--color-text-dim);
+  opacity: 0.3;
+}
+
+.russian-chamber.bullet {
+  background: var(--color-impact, #ff0040);
+  border-color: var(--color-impact, #ff0040);
+  box-shadow: 0 0 12px rgba(255,0,64,0.5);
+  opacity: 1;
+}
+
+.russian-chamber-bullet {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.russian-result-text {
+  font-family: var(--font-display);
+  font-weight: 900;
+  animation: countdownPop 400ms ease;
+}
+
+.russian-result-clic {
+  font-size: 2.2rem;
+  color: #4ade80;
+  text-shadow: 0 0 20px rgba(74,222,128,0.5), 0 0 50px rgba(74,222,128,0.15);
+}
+
+.russian-result-bang {
+  font-size: 2.8rem;
+  color: var(--color-impact, #ff0040);
+  text-shadow: 0 0 30px rgba(255,0,64,0.6), 0 0 80px rgba(255,0,64,0.2);
+}
+
+.russian-trigger {
+  margin-top: 24px;
+  font-size: 1.1rem;
+  padding: 14px 36px;
+}
+
+.russian-gun {
+  margin-bottom: 2rem;
+  color: var(--color-text);
+  filter: drop-shadow(0 0 10px var(--color-accent));
+}
+
+.russian-gun.shooting {
+  animation: gunRecoil 0.3s ease-out;
+}
+
+.russian-drum {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 2rem;
+  position: relative;
+  transition: transform 0.5s ease-out;
+}
+
+.drum-chamber {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--color-border);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  margin: -6px 0 0 -6px;
+}
+
+.drum-chamber.current {
+  background: var(--color-accent);
+  box-shadow: 0 0 15px var(--color-accent);
+}
+
+.drum-chamber.has-bullet {
+  background: var(--color-impact);
+}
+
+.current-player {
+  margin: 2rem 0;
+}
+
+.player-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: var(--color-bg-2);
+  border: 3px solid var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin: 0 auto 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-avatar.scared {
+  animation: playerShake 0.5s ease-in-out;
+  border-color: var(--color-impact);
+  box-shadow: 0 0 20px var(--color-impact);
+}
+
+.player-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display);
+}
+
+.player-status {
+  font-size: 1rem;
+  color: var(--color-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.shot-counter {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  margin-top: 2rem;
+}
+
+@keyframes gunRecoil {
+  0% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-15px) rotate(-5deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes playerShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-2deg); }
+  40% { transform: translateX(8px) rotate(2deg); }
+  60% { transform: translateX(-6px) rotate(-1deg); }
+  80% { transform: translateX(6px) rotate(1deg); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   TOAST SYSTEM
+   ══════════════════════════════════════════════════════════ */
+
+.toast-container {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  background: rgba(16,16,36,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--color-text);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  animation: toastIn 300ms cubic-bezier(0.34,1.56,0.64,1) both;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.toast-success {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 12px rgba(0,245,255,0.15);
+}
+.toast-error {
+  border-color: var(--color-impact);
+  color: var(--color-impact);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 12px rgba(255,0,110,0.15);
+}
+
+@keyframes toastIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DUEL MODE SELECTION
+   ══════════════════════════════════════════════════════════ */
+
+.avatar-wrap.duel-selected {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: 50%;
+  animation: duelSelectedPulse 1.5s ease-in-out infinite;
+}
+
+.avatar-wrap.duel-selected .avatar {
+  animation: avatarRingPulse 1.2s ease-in-out infinite;
+  filter: brightness(1.1);
+}
+
+@keyframes duelSelectedPulse {
+  0%,100% { outline-color: var(--color-accent); box-shadow: 0 0 8px rgba(0,245,255,0.2); }
+  50%     { outline-color: rgba(0,245,255,0.5); box-shadow: 0 0 16px rgba(0,245,255,0.3); }
+}
+
+.duel-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  padding: 6px 0;
+  animation: fadeIn 300ms ease;
+  text-shadow: 0 0 8px rgba(0,245,255,0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RIPPLE EFFECT
+   ══════════════════════════════════════════════════════════ */
+
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(0);
+  animation: rippleOut 600ms ease-out;
+  pointer-events: none;
+}
+
+@keyframes rippleOut {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════════════════════════ */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-text-dim);
+  text-align: center;
+  gap: 10px;
+  animation: fadeIn 400ms ease both;
+}
+
+.empty-state-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: var(--color-accent);
+  opacity: 0.5;
+  animation: emptyIconPulse 4s ease-in-out infinite;
+}
+
+@keyframes emptyIconPulse {
+  0%,100% { opacity: 0.4; transform: scale(1); box-shadow: 0 0 0 0 rgba(0,245,255,0); }
+  50%     { opacity: 0.6; transform: scale(1.04); box-shadow: 0 0 20px rgba(0,245,255,0.06); }
+}
+
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+  margin: 0;
+  opacity: 0.7;
+}
+
+.empty-state-sub {
+  font-size: 0.78rem;
+  margin: 0;
+  opacity: 0.5;
+  line-height: 1.4;
+}
+
+.empty-state-sub strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.empty-state svg {
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+.empty-state p {
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SKELETON LOADING — Ghost placeholders for empty grid
+   ══════════════════════════════════════════════════════════ */
+.avatar-wrap.skeleton {
+  pointer-events: none;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-avatar {
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 200% 200%;
+  animation: skeletonShimmer 2s ease-in-out infinite;
+}
+
+.skeleton-text {
+  display: block;
+  width: 60%;
+  height: 10px;
+  margin: 6px auto 0;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+}
+
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 0.7; transform: scale(1); }
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   JUST-ADDED FLASH — Highlight newly added participant
+   ══════════════════════════════════════════════════════════ */
+.avatar-wrap.just-added {
+  animation: justAddedFlash 0.6s ease-out;
+}
+
+@keyframes justAddedFlash {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-accent);
+    transform: scale(1.1);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px var(--color-accent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+    transform: scale(1);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   INLINE NAME EDITING — Double-click to edit participant name
+   ══════════════════════════════════════════════════════════ */
+.avatar-name-input {
+  width: 100%;
+  max-width: 80px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  font-family: inherit;
+  text-align: center;
+  color: var(--color-text);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--color-accent);
+  border-radius: 4px;
+  outline: none;
+  box-shadow: 0 0 8px var(--color-accent);
+}
+
+.avatar-name-input:focus {
+  background: rgba(255,255,255,0.15);
+}
+
+.avatar-name {
+  cursor: default;
+  user-select: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PARALLAX EFFECT — Subtle depth on scroll
+   ══════════════════════════════════════════════════════════ */
+@supports (animation-timeline: scroll()) {
+  .app-header {
+    animation: parallaxHeader linear;
+    animation-timeline: scroll();
+    animation-range: 0 200px;
+  }
+
+  @keyframes parallaxHeader {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateY(-15px);
+      opacity: 0.85;
+    }
+  }
+
+  .app-logo {
+    animation: parallaxLogo linear;
+    animation-timeline: scroll();
+    animation-range: 0 150px;
+  }
+
+  @keyframes parallaxLogo {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(0.92);
+    }
+  }
+}
+
+/* Fallback for browsers without scroll-driven animations */
+@supports not (animation-timeline: scroll()) {
+  .app-header {
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   VIEW TRANSITIONS — Circular morph for theme changes
+   ══════════════════════════════════════════════════════════ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-new(root) {
+  animation-name: themeMorphIn;
+}
+
+::view-transition-old(root) {
+  animation-name: themeMorphOut;
+}
+
+@keyframes themeMorphIn {
+  from {
+    clip-path: circle(0% at 50% 0%);
+    opacity: 0.8;
+  }
+  to {
+    clip-path: circle(150% at 50% 0%);
+    opacity: 1;
+  }
+}
+
+@keyframes themeMorphOut {
+  from {
+    clip-path: circle(150% at 50% 0%);
+    opacity: 1;
+  }
+  to {
+    clip-path: circle(0% at 50% 0%);
+    opacity: 0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DONUT CHART — Animated stats visualization
+   ══════════════════════════════════════════════════════════ */
+.stats-donut-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto var(--space-lg);
+}
+
+.stats-donut {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-segment {
+  animation: donutDraw 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes donutDraw {
+  from {
+    stroke-dasharray: 0 220;
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.stats-donut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.donut-total {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.donut-label {
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ══════════════════════════════════════════════════════════
+   GRADIENT TEXT — Premium title styling
+   ══════════════════════════════════════════════════════════ */
+.app-logo {
+  background: linear-gradient(
+    135deg,
+    var(--color-accent) 0%,
+    var(--color-text) 50%,
+    var(--color-accent) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientShift 4s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+.screen-title {
+  background: linear-gradient(
+    90deg,
+    var(--color-text) 0%,
+    var(--color-accent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.screen-title span {
+  -webkit-text-fill-color: var(--color-text-dim);
+}
+
+.modal-title {
+  background: linear-gradient(
+    90deg,
+    var(--color-accent) 0%,
+    var(--color-text) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ══════════════════════════════════════════════════════════
+   GLASSMORPHISM — Adaptive frosted glass effect
+   ══════════════════════════════════════════════════════════ */
+.modal-sheet,
+.theme-panel,
+.popup-card {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glass-rgb, 14,14,32), 0.92) 0%,
+    rgba(var(--glass-rgb, 14,14,32), 0.98) 100%
+  );
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.03),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* Theme-specific glass tints */
+[data-theme="neon"] { --glass-rgb: 10, 15, 25; }
+[data-theme="cyber"] { --glass-rgb: 8, 12, 20; }
+[data-theme="sunset"] { --glass-rgb: 25, 15, 15; }
+[data-theme="ocean"] { --glass-rgb: 10, 18, 25; }
+[data-theme="forest"] { --glass-rgb: 12, 20, 15; }
+[data-theme="lavender"] { --glass-rgb: 18, 15, 22; }
+[data-theme="rose"] { --glass-rgb: 22, 14, 18; }
+[data-theme="mint"] { --glass-rgb: 12, 22, 20; }
+[data-theme="gold"] { --glass-rgb: 22, 18, 10; }
+[data-theme="ice"] { --glass-rgb: 14, 20, 25; }
+
+/* Glass highlight on hover */
+.modal-sheet:hover,
+.popup-card:hover {
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Glass inner glow based on accent */
+.modal-sheet::before,
+.popup-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    ellipse at top center,
+    rgba(var(--accent-rgb, 0,245,255), 0.03) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ERROR BOUNDARY — Graceful error display
+   ══════════════════════════════════════════════════════════ */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-lg);
+  background: var(--color-bg);
+}
+
+.error-boundary-content {
+  text-align: center;
+  max-width: 320px;
+}
+
+.error-boundary-content svg {
+  margin-bottom: var(--space-md);
+  opacity: 0.8;
+}
+
+.error-boundary-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 var(--space-sm);
+}
+
+.error-boundary-message {
+  font-size: 0.85rem;
+  color: var(--color-text-dim);
+  margin: 0 0 var(--space-lg);
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════════════════════
+   ACCESSIBILITY — Focus, reduced motion, screen reader
+   ══════════════════════════════════════════════════════════ */
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Remove outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* High contrast focus for buttons */
+.btn:focus-visible,
+.avatar-wrap:focus-visible {
+  box-shadow: 0 0 0 3px var(--color-accent), 0 0 12px var(--color-accent);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .app-logo {
+    animation: none;
+  }
+  
+  .donut-segment {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  z-index: 9999;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: var(--space-sm);
+}
+
+/* ══════════════════════════════════════════════════════════
+   OFFLINE INDICATOR — PWA connection status
+   ══════════════════════════════════════════════════════════ */
+.offline-indicator {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 500;
+  z-index: var(--z-toast);
+  animation: slideUp 0.3s ease-out;
+}
+
+.offline-indicator.offline {
+  background: rgba(255, 80, 80, 0.9);
+  color: white;
+}
+
+.offline-indicator.online {
+  background: rgba(80, 200, 120, 0.9);
+  color: white;
+  animation: slideUp 0.3s ease-out, fadeOut 0.3s ease-in 2.7s forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
+

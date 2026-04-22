@@ -3,7 +3,7 @@
    Usa rutas relativas para funcionar tanto en local como en GitHub Pages
    ============================================================ */
 
-const CACHE_NAME = 'splitr-v1.1';
+const CACHE_NAME = 'splitr-v1.6';
 
 // Rutas relativas al scope del SW — funcionan en cualquier subdirectorio
 const PRECACHE_ASSETS = [
@@ -14,6 +14,7 @@ const PRECACHE_ASSETS = [
   './css/animations.css',
   './css/components.css',
   './css/themes.css',
+  './css/ux-improvements.css',
   './js/main.js',
   './js/state.js',
   './js/participants.js',
@@ -22,6 +23,14 @@ const PRECACHE_ASSETS = [
   './js/storage.js',
   './js/ui.js',
   './js/icons.js',
+  './js/themes.js',
+  './js/settings.js',
+  './js/stats.js',
+  './js/performance.js',
+  './js/paywall.js',
+  './js/roulette.js',
+  './js/russian.js',
+  './js/intros.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-192.svg',

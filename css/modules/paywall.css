@@ -1,0 +1,193 @@
+/* ══════════════════════════════════════════════════════════
+   PAYWALL MODULE — Donation narrative, bundle CTA, tiers
+   Extracted from ux-improvements.css for modularity.
+   ══════════════════════════════════════════════════════════ */
+
+.paywall-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.paywall-heart {
+  color: #ff5370;
+  font-size: 1.3em;
+  animation: heartBeat 1.5s ease-in-out infinite;
+  display: inline-block;
+  -webkit-text-fill-color: #ff5370;
+  background: none;
+}
+
+/* Dev message */
+.paywall-dev-message {
+  padding: var(--space-md);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-rgb, 0,245,255), 0.05),
+    rgba(var(--accent-rgb, 0,245,255), 0.02)
+  );
+  border: 1px solid rgba(var(--accent-rgb, 0,245,255), 0.1);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+}
+.paywall-dev-message p {
+  margin: 0 0 var(--space-sm);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+.paywall-dev-message p:last-child {
+  margin-bottom: 0;
+  color: var(--color-text-dim);
+}
+.paywall-dev-message strong {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+/* Bundle CTA — emoji + título + subtitle */
+.paywall-bundle-cta {
+  display: flex !important;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-md) var(--space-lg) !important;
+  background: linear-gradient(135deg, #FFD700 0%, #FF6B00 100%) !important;
+  color: #1a0f00 !important;
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  cursor: pointer;
+  margin-bottom: var(--space-md);
+  box-shadow:
+    0 8px 24px rgba(255, 107, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  min-height: 64px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.paywall-bundle-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 12px 32px rgba(255, 107, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.paywall-bundle-cta:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+/* Shimmer sweep sobre el botón */
+.paywall-bundle-cta::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: paywallShimmerSweep 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes paywallShimmerSweep {
+  0%   { left: -100%; }
+  50%  { left: 150%; }
+  100% { left: 150%; }
+}
+.paywall-bundle-emoji {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: #1a0f00;
+  -webkit-text-fill-color: initial;
+}
+.paywall-bundle-emoji svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+.paywall-loader svg {
+  animation: paywallSpin 0.9s linear infinite;
+}
+@keyframes paywallSpin {
+  to { transform: rotate(360deg); }
+}
+.paywall-bundle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.paywall-bundle-label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a0f00;
+  letter-spacing: -0.01em;
+}
+.paywall-bundle-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(26, 15, 0, 0.75);
+  letter-spacing: 0.02em;
+}
+
+/* Tier label divider */
+.paywall-tier-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm) 0;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: var(--space-sm);
+}
+.paywall-tier-label span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.paywall-tier-label small {
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  opacity: 0.7;
+}
+
+/* Thank you footer */
+.paywall-thanks {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  text-align: center;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 83, 112, 0.08) 0%,
+    transparent 70%
+  );
+  border-radius: var(--radius-lg);
+}
+.paywall-thanks p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-dim);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Restore button */
+.paywall-restore-btn {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: var(--color-text-dim) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+.paywall-restore-btn:hover {
+  border-color: rgba(var(--accent-rgb, 0,245,255), 0.3) !important;
+  color: var(--color-accent) !important;
+}

@@ -1,0 +1,177 @@
+/* ══════════════════════════════════════════════════════════
+   PERSONALITY — ajustes visuales sutiles por personalidad
+   Filosofía: la identidad cyberpunk NO cambia. Solo se ajusta
+   el tempo, la saturación y los acentos secundarios.
+   ══════════════════════════════════════════════════════════ */
+
+/* Neutral — no requiere overrides (es el default) */
+body.personality-neutral {
+  --personality-speed-mult: 1;
+  --personality-saturation: 1;
+}
+
+/* Épico — más lento, más intenso, más saturado */
+body.personality-epic {
+  --personality-speed-mult: 1.2;
+  --personality-saturation: 1.15;
+  filter: saturate(var(--personality-saturation));
+}
+
+body.personality-epic .btn-impact {
+  letter-spacing: 0.18em;
+  box-shadow:
+    0 0 30px rgba(255, 100, 100, 0.25),
+    0 0 60px rgba(123, 47, 190, 0.2),
+    inset 0 0 15px rgba(0, 245, 255, 0.1);
+}
+
+body.personality-epic .app-logo {
+  letter-spacing: 0.08em;
+}
+
+/* Broma — más rápido, colores vivos, movimientos juguetones */
+body.personality-playful {
+  --personality-speed-mult: 0.75;
+  --personality-saturation: 1.1;
+  filter: saturate(var(--personality-saturation));
+}
+
+body.personality-playful .participant-chip {
+  transition-duration: 0.18s;
+}
+
+body.personality-playful .btn-impact {
+  animation: personalityPlayfulBounce 2.2s ease-in-out infinite;
+}
+
+@keyframes personalityPlayfulBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Tenso — más lento, más desaturado, más sombras */
+body.personality-tense {
+  --personality-speed-mult: 1.4;
+  --personality-saturation: 0.85;
+  filter: saturate(var(--personality-saturation)) contrast(1.08);
+}
+
+body.personality-tense::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 40%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  z-index: 1;
+}
+
+body.personality-tense .btn-impact {
+  letter-spacing: 0.2em;
+}
+
+/* Elegante — pausado, luminoso, refinado */
+body.personality-elegant {
+  --personality-speed-mult: 1.15;
+  --personality-saturation: 0.92;
+  filter: saturate(var(--personality-saturation));
+}
+
+body.personality-elegant .app-logo {
+  letter-spacing: 0.1em;
+  font-weight: 500;
+}
+
+body.personality-elegant .btn-impact {
+  letter-spacing: 0.22em;
+  font-weight: 600;
+}
+
+/* ── Selector visual de personalidades en Settings ──────── */
+
+.personality-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.personality-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-text-dim);
+  text-align: center;
+  font-family: inherit;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+  min-height: 72px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.personality-card:hover {
+  background: rgba(0, 245, 255, 0.05);
+  border-color: rgba(0, 245, 255, 0.25);
+  transform: translateY(-1px);
+  color: var(--color-text);
+}
+
+.personality-card-active {
+  background: rgba(0, 245, 255, 0.12);
+  border-color: rgba(0, 245, 255, 0.65);
+  color: var(--color-accent);
+  box-shadow:
+    0 0 0 1px rgba(0, 245, 255, 0.25),
+    0 2px 14px rgba(0, 245, 255, 0.25);
+}
+
+.personality-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 0 6px currentColor);
+  opacity: 0.85;
+}
+
+.personality-card-active .personality-card-icon {
+  opacity: 1;
+}
+
+.personality-card-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.personality-card-desc {
+  font-size: 0.62rem;
+  opacity: 0.65;
+  line-height: 1.1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.personality-playful .btn-impact,
+  .personality-card {
+    animation: none;
+    transition: none;
+  }
+  .personality-card:hover {
+    transform: none;
+  }
+}

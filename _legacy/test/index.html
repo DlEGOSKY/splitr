@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="cyberpunk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splitr - Stability Tests</title>
+  
+  <!-- CSS de la app para testing -->
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/themes.css">
+  <link rel="stylesheet" href="../css/ux-improvements.css">
+  
+  <style>
+    body {
+      padding: 20px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+    }
+    
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .test-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .test-controls {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    
+    .test-output {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    
+    .test-summary {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(0, 245, 255, 0.1);
+      border: 1px solid rgba(0, 245, 255, 0.3);
+      border-radius: 6px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 200ms ease;
+    }
+    
+    .btn-primary {
+      background: var(--color-accent);
+      color: var(--color-bg);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-text);
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-running { background: #ffa500; }
+    .status-passed { background: #00ff00; }
+    .status-failed { background: #ff0000; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <div class="test-header">
+      <h1>🧪 Splitr Stability Tests</h1>
+      <p>Verificación automática de módulos, edge cases y compatibilidad PWA</p>
+    </div>
+    
+    <div class="test-controls">
+      <button class="btn btn-primary" onclick="runTests()">
+        🚀 Ejecutar Tests
+      </button>
+      <button class="btn btn-secondary" onclick="clearOutput()">
+        🗑️ Limpiar
+      </button>
+      <button class="btn btn-secondary" onclick="exportReport()">
+        📄 Exportar Reporte
+      </button>
+    </div>
+    
+    <div class="test-summary" id="test-summary" style="display: none;">
+      <div id="summary-content"></div>
+    </div>
+    
+    <div class="test-output" id="test-output">
+      Haz clic en "Ejecutar Tests" para comenzar...
+    </div>
+  </div>
+
+  <script>
+    let originalConsoleLog = console.log;
+    let testOutput = '';
+    
+    // Interceptar console.log para mostrar en la UI
+    console.log = function(...args) {
+      const message = args.join(' ');
+      testOutput += message + '\n';
+      document.getElementById('test-output').textContent = testOutput;
+      document.getElementById('test-output').scrollTop = document.getElementById('test-output').scrollHeight;
+      originalConsoleLog.apply(console, args);
+    };
+    
+    async function runTests() {
+      clearOutput();
+      document.getElementById('test-summary').style.display = 'none';
+      
+      try {
+        // Cargar el script de tests
+        const script = document.createElement('script');
+        script.src = './stability-tests.js';
+        script.type = 'module';
+        
+        script.onload = async () => {
+          if (window.SplitTests) {
+            await window.SplitTests.runAllTests();
+            showSummary();
+          }
+        };
+        
+        script.onerror = () => {
+          console.log('❌ Error loading test script');
+        };
+        
+        document.head.appendChild(script);
+      } catch (error) {
+        console.log(`❌ Error running tests: ${error.message}`);
+      }
+    }
+    
+    function clearOutput() {
+      testOutput = '';
+      document.getElementById('test-output').textContent = 'Ejecutando tests...';
+    }
+    
+    function showSummary() {
+      const report = JSON.parse(localStorage.getItem('splitr-test-report') || '{}');
+      if (report.summary) {
+        const { total, passed, failed } = report.summary;
+        const successRate = Math.round((passed / total) * 100);
+        
+        const summaryEl = document.getElementById('summary-content');
+        summaryEl.innerHTML = `
+          <h3>📊 Resumen de Tests</h3>
+          <p>
+            <span class="status-indicator status-${failed === 0 ? 'passed' : 'failed'}"></span>
+            <strong>${passed}/${total} tests pasaron</strong> (${successRate}% éxito)
+          </p>
+          ${failed > 0 ? `<p style="color: var(--color-impact);">⚠️ ${failed} tests fallaron - revisar detalles arriba</p>` : ''}
+        `;
+        
+        document.getElementById('test-summary').style.display = 'block';
+      }
+    }
+    
+    function exportReport() {
+      const report = localStorage.getItem('splitr-test-report');
+      if (report) {
+        const blob = new Blob([report], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `splitr-test-report-${new Date().toISOString().slice(0, 19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } else {
+        alert('No hay reporte disponible. Ejecuta los tests primero.');
+      }
+    }
+  </script>
+</body>
+</html>

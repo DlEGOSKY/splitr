@@ -52,6 +52,52 @@
   --z-overlay: 10;
   --z-modal:   100;
   --z-toast:   1000;
+
+  /* Performance multipliers (ajustados por JS según device) */
+  --perf-glow: 1;
+  --perf-blur: 1;
+  --perf-particles: 1;
+}
+
+/* ── MODO RENDIMIENTO REDUCIDO ── */
+/* Se activa con clase .perf-reduced en <html> o automáticamente en móviles modestos */
+.perf-reduced {
+  --glow-primary:    0 0 10px rgba(123, 47, 190, 0.4);
+  --glow-accent:     0 0 8px rgba(0, 245, 255, 0.5);
+  --glow-impact:     0 0 10px rgba(255, 0, 110, 0.5);
+  --perf-glow: 0.5;
+  --perf-blur: 0.5;
+  --perf-particles: 0.5;
+}
+
+/* Reducir efectos en móviles pequeños automáticamente */
+@media (max-width: 480px) and (hover: none) {
+  :root:not(.perf-full) {
+    --glow-primary:    0 0 12px rgba(123, 47, 190, 0.5);
+    --glow-accent:     0 0 10px rgba(0, 245, 255, 0.55);
+    --glow-impact:     0 0 12px rgba(255, 0, 110, 0.55);
+    --perf-glow: 0.7;
+    --perf-particles: 0.7;
+  }
+}
+
+/* Desactivar animaciones si el usuario prefiere movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --perf-glow: 0.3;
+    --perf-blur: 0;
+    --perf-particles: 0.2;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Pausar animaciones cuando la pestaña está oculta (ahorra batería) */
+.tab-hidden * {
+  animation-play-state: paused !important;
 }
 
 /* ── RESET MODERNO ── */
@@ -73,10 +119,20 @@ body {
   color: var(--color-text);
   min-height: 100dvh;
   overflow-x: hidden;
-  /* Textura de ruido sutil sobre el fondo */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(123, 47, 190, 0.15) 0%, transparent 70%),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  position: relative;
+}
+
+/* Textura de grano real (noise.png tiled) — se adapta al tema */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: url('/noise.png') repeat;
+  background-size: 150px 150px;
+  opacity: 0.035;
+  mix-blend-mode: screen;
 }
 
 /* ── LAYOUT RAÍZ ── */
@@ -88,6 +144,43 @@ body {
   margin: 0 auto;
   padding: var(--space-md);
   position: relative;
+  z-index: 1;
+}
+
+/* Tablet: más ancho, respiración */
+@media (min-width: 768px) {
+  #app {
+    max-width: 640px;
+    padding: var(--space-lg);
+  }
+}
+
+/* Desktop: más ancho cómodo */
+@media (min-width: 1024px) {
+  #app {
+    max-width: 720px;
+    padding: var(--space-lg) var(--space-xl);
+  }
+}
+
+/* Desktop XL */
+@media (min-width: 1440px) {
+  #app {
+    max-width: 780px;
+  }
+}
+
+/* ── SORTEAR SIEMPRE VISIBLE (sticky bottom) ──
+   Arregla: tener que scrollear para encontrar el botón */
+#screen-home > .btn-impact {
+  position: sticky;
+  bottom: var(--space-md);
+  z-index: 20;
+  /* Backdrop/glow para que resalte sobre contenido scrolleado */
+  box-shadow:
+    0 0 0 8px var(--color-bg),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(var(--color-accent-rgb, 0, 245, 255), 0.25);
 }
 
 /* ── PANTALLAS (vistas de la app) ── */
@@ -138,11 +231,27 @@ body {
 .text-dim    { color: var(--color-text-dim); }
 
 /* Scrollbar personalizada */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--color-bg-2); }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
+  background: rgba(123, 47, 190, 0.5);
   border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 47, 190, 0.7);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(123, 47, 190, 0.5) transparent;
+}
+
+/* Focus ring accesible — solo con teclado */
+:focus-visible {
+  outline: 2px solid rgba(0, 245, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Selección de texto */

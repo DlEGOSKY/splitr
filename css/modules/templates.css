@@ -1,0 +1,334 @@
+/* ══════════════════════════════════════════════════════════
+   TEMPLATE CHIPS — Plantillas rápidas en home idle
+   ══════════════════════════════════════════════════════════ */
+
+.template-chips {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0 var(--space-sm);
+  animation: templateChipsIn 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes templateChipsIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.template-chips-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 0 2px;
+}
+
+.template-chips-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  opacity: 0.85;
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.25);
+}
+
+.template-chips-hint {
+  font-size: 0.7rem;
+  color: var(--color-text-dim);
+  opacity: 0.6;
+  font-weight: 500;
+}
+
+.template-chips-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 560px) {
+  .template-chips-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 860px) {
+  .template-chips-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.template-chip {
+  --chip-hue: 200;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(
+    135deg,
+    hsla(var(--chip-hue), 80%, 55%, 0.1) 0%,
+    hsla(var(--chip-hue), 70%, 40%, 0.05) 100%
+  );
+  border: 1px solid hsla(var(--chip-hue), 80%, 60%, 0.22);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-text);
+  font-family: inherit;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  min-height: 54px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.template-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 0% 0%,
+    hsla(var(--chip-hue), 90%, 60%, 0.15) 0%,
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.template-chip:hover {
+  background: linear-gradient(
+    135deg,
+    hsla(var(--chip-hue), 85%, 60%, 0.18) 0%,
+    hsla(var(--chip-hue), 75%, 45%, 0.08) 100%
+  );
+  border-color: hsla(var(--chip-hue), 90%, 65%, 0.45);
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 14px hsla(var(--chip-hue), 80%, 40%, 0.25),
+    inset 0 1px 0 hsla(var(--chip-hue), 90%, 80%, 0.1);
+}
+
+.template-chip:hover::before {
+  opacity: 1;
+}
+
+.template-chip:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.template-chip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: hsla(var(--chip-hue), 80%, 50%, 0.18);
+  color: hsl(var(--chip-hue), 100%, 75%);
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px hsla(var(--chip-hue), 90%, 60%, 0.35));
+}
+
+.template-chip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+
+.template-chip-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.template-chip-sublabel {
+  font-size: 0.68rem;
+  color: var(--color-text-dim);
+  line-height: 1.2;
+  opacity: 0.75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sugerida del día — pequeño badge estrella */
+.template-chip-suggested {
+  border-color: hsla(var(--chip-hue), 90%, 65%, 0.55);
+  box-shadow:
+    0 0 0 1px hsla(var(--chip-hue), 90%, 70%, 0.15),
+    0 4px 18px hsla(var(--chip-hue), 80%, 45%, 0.25);
+  animation:
+    templateChipsIn 400ms cubic-bezier(0.22, 1, 0.36, 1) both,
+    suggestedPulse 3.5s ease-in-out 600ms infinite;
+}
+
+@keyframes suggestedPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px hsla(var(--chip-hue), 90%, 70%, 0.15),
+      0 4px 18px hsla(var(--chip-hue), 80%, 45%, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px hsla(var(--chip-hue), 90%, 75%, 0.35),
+      0 6px 24px hsla(var(--chip-hue), 85%, 55%, 0.4);
+  }
+}
+
+.template-chip-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: hsl(var(--chip-hue), 95%, 65%);
+  color: #000;
+  box-shadow: 0 0 10px hsla(var(--chip-hue), 95%, 65%, 0.6);
+}
+
+/* Accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .template-chips,
+  .template-chip {
+    animation: none;
+  }
+  .template-chip:hover {
+    transform: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   RECENT GROUPS STRIP — grupos guardados accesibles con un tap
+   ══════════════════════════════════════════════════════════ */
+
+.recent-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--space-sm) 0 0;
+  animation: templateChipsIn 400ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+}
+
+.recent-groups-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 0 2px;
+}
+
+.recent-groups-label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  opacity: 0.75;
+}
+
+.recent-groups-hint {
+  font-size: 0.68rem;
+  color: var(--color-text-dim);
+  opacity: 0.55;
+}
+
+.recent-groups-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recent-group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 8px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--color-text);
+  text-align: left;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  min-height: 42px;
+}
+
+.recent-group-chip:hover {
+  background: rgba(0, 245, 255, 0.08);
+  border-color: rgba(0, 245, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.recent-group-chip:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.recent-group-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: rgba(0, 245, 255, 0.1);
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.recent-group-text {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0;
+  line-height: 1.15;
+  min-width: 0;
+}
+
+.recent-group-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-group-count {
+  font-size: 0.65rem;
+  color: var(--color-text-dim);
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-groups,
+  .recent-group-chip {
+    animation: none;
+    transition: none;
+  }
+  .recent-group-chip:hover {
+    transform: none;
+  }
+}

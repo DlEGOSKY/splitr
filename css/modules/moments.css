@@ -1,0 +1,162 @@
+/* ══════════════════════════════════════════════════════════
+   MOMENTS — efectos sutiles contextuales (temporadas + eggs)
+   Filosofía: sutil por defecto, intenso solo cuando importa.
+   ══════════════════════════════════════════════════════════ */
+
+/* ── HALLOWEEN (25 oct – 1 nov) ──────────────────────────── */
+body.moment-halloween {
+  --moment-tint: rgba(255, 120, 0, 0.06);
+}
+
+body.moment-halloween::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(255, 100, 0, 0.08) 0%,
+    transparent 70%
+  );
+  z-index: 1;
+  animation: momentPulse 4s ease-in-out infinite;
+}
+
+body.moment-halloween .app-logo {
+  text-shadow:
+    0 0 12px rgba(255, 140, 0, 0.6),
+    0 0 28px rgba(200, 80, 0, 0.35);
+}
+
+/* ── CHRISTMAS (20-26 dic) ───────────────────────────────── */
+body.moment-christmas::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 0% 100%, rgba(0, 200, 80, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 0%, rgba(220, 30, 30, 0.06) 0%, transparent 60%);
+  z-index: 1;
+}
+
+body.moment-christmas .app-logo {
+  text-shadow:
+    0 0 10px rgba(0, 255, 120, 0.4),
+    0 0 20px rgba(255, 60, 60, 0.3);
+}
+
+/* ── NEWYEAR (30 dic – 2 ene) ────────────────────────────── */
+body.moment-newyear .app-logo {
+  animation: moment-newyear-shine 3s ease-in-out infinite;
+}
+
+@keyframes moment-newyear-shine {
+  0%, 100% { text-shadow: 0 0 8px rgba(255, 215, 0, 0.4); }
+  50% { text-shadow: 0 0 18px rgba(255, 215, 0, 0.8), 0 0 32px rgba(255, 180, 0, 0.5); }
+}
+
+body.moment-newyear::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  z-index: 1;
+}
+
+/* ── VALENTINES (13-15 feb) ──────────────────────────────── */
+body.moment-valentines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 80, 140, 0.06) 0%, transparent 65%);
+  z-index: 1;
+}
+
+body.moment-valentines .app-logo {
+  text-shadow:
+    0 0 12px rgba(255, 80, 140, 0.5),
+    0 0 24px rgba(200, 40, 100, 0.3);
+}
+
+/* ── NIGHT OWL (00:00 – 05:00) ───────────────────────────── */
+body.moment-night-owl {
+  /* ligera reducción de intensidad para la vista nocturna */
+  filter: saturate(0.92) brightness(0.97);
+}
+
+/* ── STREAK 3 (easter egg post-sorteo) ───────────────────── */
+body.moment-streak-3 {
+  animation: momentStreakShake 0.6s ease-out;
+}
+
+/* ── STREAK 5 (easter egg post-sorteo, más intenso) ──────── */
+body.moment-streak-5 {
+  animation: momentStreakGlow 2.5s ease-out;
+}
+
+body.moment-streak-5::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 80, 80, 0.15) 0%,
+    transparent 60%
+  );
+  z-index: 9998;
+  animation: momentFade 2.5s ease-out forwards;
+}
+
+/* ── MILESTONES (100/500/1000 sorteos) ───────────────────── */
+body.moment-milestone::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 215, 0, 0.2) 0%,
+    transparent 55%
+  );
+  z-index: 9998;
+  animation: momentFade 3s ease-out forwards;
+}
+
+/* ── KEYFRAMES COMPARTIDOS ───────────────────────────────── */
+@keyframes momentPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes momentFade {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes momentStreakShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, 2px); }
+}
+
+@keyframes momentStreakGlow {
+  0% { filter: brightness(1); }
+  20% { filter: brightness(1.25) saturate(1.3); }
+  100% { filter: brightness(1); }
+}
+
+/* Respeto reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  body.moment-halloween::before,
+  body.moment-newyear .app-logo,
+  body.moment-streak-3,
+  body.moment-streak-5 {
+    animation: none;
+  }
+}

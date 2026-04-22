@@ -1,0 +1,141 @@
+# SPLITR — Progress log (sesión "capas K")
+# Última actualización: 2026-04-19
+
+## ✅ COMPLETADO (8 features)
+
+### K.1 — Plantillas rápidas
+- src/utils/templates.ts (8 plantillas, sugerencia por día)
+- src/components/TemplateChips.tsx
+- css/modules/templates.css
+- Integrado en HomeScreen empty state
+- Handler: handleApplyTemplate (pre-llena pregunta + modo + focus input)
+
+### K.2 — Narrador por voz
+- src/utils/narrator.ts (SpeechSynthesis nativo, cero deps)
+- Intro dramática por modo (bomb/russian = grave lento, coin/dice = rápido agudo)
+- Prioridad voces: es-MX > es-ES > es-* > default
+- Prefs.narrator (default: true) + toggle en Settings → Audio
+- Integrado en useSorteo.ts + 4 overlays externos (coin/dice/bomb/russian/roulette)
+- stopNarrator() al cerrar result
+
+### K.3 — Replay del sorteo
+- Ref: replayForcedWinnerRef en HomeScreen
+- handleCountdownComplete usa el ref si está set para forzar mismo ganador
+- Botón "Rejugar" en ResultOverlay (solo si onReplay prop)
+- Overlays externos hacen replay sin forzar (su UI es propia)
+
+### K.4 — Screenshot compartible
+- src/utils/resultImage.ts (Canvas 1080x1080, cero deps)
+- Poster: bg gradient + glow + avatar con iniciales + nombre gigante + HUD corners
+- Web Share API con file si disponible, fallback download
+- Botón "Imagen" con spinner de carga en ResultOverlay
+- Botón "Link" (share clásico) mantenido aparte
+
+### K.5 — Stats insights
+- src/utils/statsInsights.ts — analiza sessionHistory
+- 9 tipos: streak, favorite-mode, peak-day, peak-hour, busy-week, loyal-loser,
+  milestone, fresh-start, comeback
+- src/components/InsightsCarousel.tsx + estilos en stats.css
+- Mostrado en StatsScreen tras summary-cards (top 3 por weight)
+
+### K.6 — Grupos frecuentes
+- src/components/RecentGroupsStrip.tsx (reutiliza savedGroups + loadGroup del store)
+- Se muestra en home empty state bajo TemplateChips
+- Ordenado por savedAt desc, top 3
+- Estilos en css/modules/templates.css (misma familia visual)
+
+### K.7 — Easter eggs contextuales
+### K.8 — Temporadas automáticas
+(sistema unificado "moments")
+- src/utils/moments.ts — seasonal + post-sorteo detect
+- css/modules/moments.css — clases body.moment-*
+- Seasonal: halloween (25 oct–1 nov), christmas (20-26 dic), newyear (30 dic–2 ene),
+  valentines (13-15 feb), night-owl (00-05h)
+- Post-sorteo: streak-3, streak-5, milestone-100/500/1000
+- Refresh horario en App.tsx (cruza medianoche sin reload)
+- Trigger ephemeral desde useSorteo.ts on reveal + toast flash
+
+## ✅ COMPLETADO (resto — 12/12 features)
+
+### K.9 — Modo cine landscape (completado)
+- src/hooks/useCinemaMode.ts — toggle body.cinema-mode + Fullscreen API
+- css/modules/cinema.css — vignette intenso, header minimizado,
+  grid agrandado, chips x1.08 (x1.15 en landscape ancho)
+- Botón toggle en header (junto a "Ayuda")
+- ESC sale del fullscreen Y del cinema mode
+- NO persiste (estado del momento)
+
+### K.10 — Ritual previo (completado, sin emojis)
+- Pref `ritual` (default OFF, opt-in) en Settings → Visual
+- CSS-only mediante body.splitr-ritual (NO overlay extra, NO solapa countdown)
+- ~800ms antes del countdown: vignette in + chips pulsan escalonados
+  + botón "respira" con breathe
+- css/modules/ritual.css
+- Toggle en SettingsModal
+
+### K.11 — Reactions post-resultado (completado, SVG icons)
+- 5 reactions: love, fire, impact, target, star
+- Iconos SVG propios con stroke delgado (NO emojis, respetando regla)
+- Cada reaction: paleta HSL propia + burst de partículas sesgado hacia arriba
+- Haptic tap + pulse visual + "last" state con glow
+- src/components/ReactionBar.tsx + spawnReaction en particles.ts
+- Estilos en css/modules/result.css
+
+### K.12 — Personalidades del sorteo (completado, bajo riesgo)
+- 5 personalidades: neutral, epic, playful, tense, elegant
+- src/utils/personality.ts — sistema centralizado con phrases + voice multipliers
+- Afecta:
+  * Narrador: frases personalizadas + pitch/rate × multiplier
+  * CSS body.personality-* → saturación, letter-spacing, vignette sutil
+- NO toca partículas ni audio WebAudio (riesgo bajo)
+- Selector visual en Settings → Visual con cards grid
+- src/components/PersonalitySelector.tsx + css/modules/personality.css
+- Default = neutral (mantiene comportamiento histórico)
+
+## 📦 ESTADO BUILD (tras 12/12 features)
+- CSS: 159 kB (gzip ~29 kB)   [+20 kB vs base]
+- JS:  457 kB (gzip ~142 kB)  [+30 kB vs base]
+- Cero deps nuevas
+- Cero código nuevo en chunk lazy de intros
+- 12 módulos CSS nuevos: templates, moments, cinema, ritual, personality
+
+## 🐛 COSAS A VIGILAR SI ALGO SALE MAL
+
+1. **Narrador**: si no suena, verificar:
+   - Prefs.narrator=true (Settings → Audio → Narrador por voz)
+   - Browser soporta speechSynthesis (Safari iOS a veces tarda en cargar voces)
+   - User gesture requerido antes del primer speak (ensureAudio() lo cubre)
+
+2. **Replay**: solo fuerza ganador en modos NO overlay (coin/dice/bomb/russian/split
+   hacen replay fresco). Ver overlayModes en handleReplay.
+
+3. **Screenshot**: Web Share con files NO está en desktop. Cae a download.
+   Probar en mobile real (Safari iOS 16.4+, Chrome Android).
+
+4. **Insights**: se ocultan si no hay ≥3 sorteos. Es feature esperado, no bug.
+
+5. **Moments seasonal**: se activan por fecha real del dispositivo.
+   Si no se ven, usar devtools → document.body.classList.add('moment-halloween')
+   para probar visual.
+
+6. **Recent groups**: se ocultan si savedGroups está vacío. Es esperado.
+
+7. **Lint warnings "imports unused"**: falsos positivos del IDE mientras
+   editaba, se resuelven con build real (tsc).
+
+## 📝 NOTAS DE DISEÑO CLAVE
+
+- **Filosofía respetada**: sin nuevas deps, sin invadir identidad cyberpunk,
+  cada feature se oculta si no aporta (cero ruido visual idle).
+- **Reducción de fricción**: el home idle ahora muestra plantillas + grupos
+  → primer sorteo en 2 taps en lugar de 5-6.
+- **"La app te conoce" sin ML**: insights + seasonal + easter eggs combinados
+  crean sensación de inteligencia con puro análisis determinista local.
+
+## 🎯 RECOMENDACIÓN ANTES DE SEGUIR
+
+1. Probar lo hecho en dispositivo real (móvil PWA instalado)
+2. Confirmar que narrador se oye y no es molesto
+3. Verificar que screenshot se genera bien en iOS y Android
+4. Medir FPS en home idle (no debe haber regresión por moments)
+5. Decidir K.9-K.12 basado en feedback real, no en plan inicial
